@@ -117,7 +117,7 @@ def login_api():
 
             events = events_result.get("items", [])
 
-            st.subheader("📅 오늘 이후 일정")
+            st.subheader("📅 오늘 이후 이벤트")
             if not events:
                 st.write("예정된 일정이 없습니다.")
             for event in events:
