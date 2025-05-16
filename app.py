@@ -66,12 +66,7 @@ def login_api():
             name="Continue with Google",
             icon="",
             redirect_uri="http://localhost:8080",
-            scope = [
-                "openid",
-                "email",
-                "profile",
-                "https://www.googleapis.com/auth/calendar"  # 읽고 쓰기 가능
-            ]
+            scope="openid email profile"
         )
 
         if token:
