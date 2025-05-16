@@ -9,6 +9,9 @@ langchain-openai
 langchain-community
 python-dotenv
 
+# 캘린더
+streamlit_calendar
+
 #로그인 관련
 streamlit-oauth
 
