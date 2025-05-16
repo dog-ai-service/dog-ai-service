@@ -26,8 +26,6 @@ from langchain.memory import ConversationBufferMemory
 from langchain import hub
 # 로그인
 from streamlit_oauth import OAuth2Component
-# 로그인 토큰 해석
-import jwt
 
 # 환경변수 파일 로드 -> 데이터 획득
 load_dotenv()
@@ -38,8 +36,7 @@ load_dotenv()
 
 # 설정 : 1. openai만 사용, 2. 랭체인 에이전트를 이용 검색증강, 3. 더미
 ai_res_type = 2
-# 로그인 정보 저장 토큰
-token=None
+
 
 # ui 함수 모음
 #사이드바
@@ -49,6 +46,21 @@ def sidebar():
     return
 
 #로그인
+def login():
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
+
+    # 상단에 로그인 버튼 배치 (우측 정렬 느낌)
+    col1, col2, col3 = st.columns([6, 1, 1])
+    with col3:
+        if st.session_state.logged_in:
+            if st.button("로그아웃"):
+                st.session_state.logged_in = False
+        else:
+            if st.button("로그인"):
+                st.session_state.logged_in = True
+    return
+
 def login_api():
     client_id = os.getenv("GOOGLE_CLIENT_ID")
     client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
@@ -60,30 +72,17 @@ def login_api():
         token_endpoint="https://oauth2.googleapis.com/token",
     )
 
-    # 세션 상태에 token이 없으면 로그인 버튼 표시
-    if "token" not in st.session_state:
-        token = oauth2.authorize_button(
-            name="Continue with Google",
-            icon="",
-            redirect_uri="http://localhost:8080",
-            scope="openid email profile"
-        )
+    # 로그인 버튼
+    token = oauth2.authorize_button(
+        name="Continue with Google",
+        icon="",
+        redirect_uri="http://localhost:8080",  # Streamlit 실행 주소
+        scope="openid email profile"
+    )
 
-        if token:
-            st.session_state.token = token  # 세션에 저장
-            st.rerun()  # 새로고침해서 버튼 숨김
-
-    else:
-        token = st.session_state.token
-        st.success("✅ 로그인 성공!")
-        id_token = token["token"]["id_token"]
-        decoded = jwt.decode(id_token, options={"verify_signature": False})
-        
-        st.write(f"환영합니다, {decoded['name']}님")
-        st.image(decoded['picture'], width=100)
-        st.write(f"이메일: {decoded['email']}")
-
-
+    if token:
+        st.success("로그인 성공!")
+        st.json(token)
 
 #질문창
 def prompt_box():
@@ -155,14 +154,17 @@ def init_chat():
     '''
     # 제목
     st.title('LLM,랭체인,streamlit기반 서비스')
+
     # sidebar
     sidebar()
+
     # 로그인
+    login()
     login_api()
+    
     # 채팅 입력창
-    # 로그인한 사용자만 아래 실행
-    if "token" in st.session_state:
-        prompt_box()
+    prompt_box()
+
     pass
 
 # 랭체인-에이전트 초기화
