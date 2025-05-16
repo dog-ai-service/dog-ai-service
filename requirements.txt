@@ -8,3 +8,6 @@ langchain
 langchain-openai
 langchain-community
 python-dotenv
+
+#로그인 관련
+streamlit-oauth
