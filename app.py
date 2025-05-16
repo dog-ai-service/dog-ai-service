@@ -38,8 +38,6 @@ load_dotenv()
 
 # 설정 : 1. openai만 사용, 2. 랭체인 에이전트를 이용 검색증강, 3. 더미
 ai_res_type = 2
-# 로그인 정보 저장 토큰
-token=None
 
 # ui 함수 모음
 #사이드바
@@ -70,7 +68,7 @@ def login_api():
                 "openid",
                 "email",
                 "profile",
-                "https://www.googleapis.com/auth/calendar"  # 읽고 쓰기 가능
+                "https://www.googleapis.com/auth/calendar"  # 구글 캘린더에서 읽고 쓰기 가능
             ]
         )
 
