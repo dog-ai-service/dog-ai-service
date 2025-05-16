@@ -51,10 +51,10 @@ L .gitignore        : git 예외설정
 >> 만일의 사태를 대비한 백업용 branch  
 >> main이나 test에서 이상이 없다면 주기적으로 백업해두자
 >
-> ### []
->> 성한빈 개인 hanbin
-> ### []
->> 심규상 개인 kyusang
+> ### hanbin
+>> 성한빈 개인 branch
+> ### kyusang
+>> 심규상 개인 branch
 > ### obj
 >> 오병재 개인 branch
 
