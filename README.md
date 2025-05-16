@@ -52,9 +52,9 @@ L .gitignore        : git 예외설정
 >> main이나 test에서 이상이 없다면 주기적으로 백업해두자
 >
 > ### []
->> 성한빈 개인 branch
+>> 성한빈 개인 hanbin
 > ### []
->> 심규상 개인 branch
+>> 심규상 개인 kyusang
 > ### obj
 >> 오병재 개인 branch
 
