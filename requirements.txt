@@ -1,0 +1,10 @@
+streamlit
+streamlit-chat
+langchainhub
+wikipedia
+duckduckgo-search
+openai
+langchain
+langchain-openai
+langchain-community
+python-dotenv
