@@ -55,7 +55,7 @@ L .gitignore        : git 예외설정
 >> 성한빈 개인 branch
 > ### []
 >> 심규상 개인 branch
-> ### wanter9091
+> ### obj
 >> 오병재 개인 branch
 
 
