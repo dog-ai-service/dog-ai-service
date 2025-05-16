@@ -54,7 +54,7 @@ L .gitignore        : git 예외설정
 > ### []
 >> 성한빈 개인 branch
 > ### []
->> 심규샹 개인 branch
+>> 심규상 개인 branch
 > ### wanter9091
 >> 오병재 개인 branch
 
@@ -67,7 +67,7 @@ L .gitignore        : git 예외설정
 
 ## Git 초기설정.
 >터미널/cmd/git bash에서 프로젝트를 저장할 위치로 이동 후 아래 코드 입력
->> git clone https://github.com/wanter9091/dog-ai-service.git  
+>> git clone https://github.com/dog-ai-service/dog-ai-service.git  
 >
 > vscode에서 해당 프로젝트를 폴더 열기  
 > vscode의 터미널에서 아래 코드 입력
