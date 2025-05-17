@@ -4,7 +4,7 @@ import streamlit as st
 # 컴포넌트
 from components.sidebar import sidebar
 # 서비스
-from pages import calendar_page, chatbot_page, login_page
+from pages import calendar_page, chatbot_page, user_page
 
 
 def init_chat():
@@ -14,8 +14,8 @@ def init_chat():
         calendar_page()
     elif page == "챗봇":
         chatbot_page()
-    #elif page == "사용자 정보":
-    #    login_page()
+    elif page == "사용자 정보":
+        user_page()
     
     
 

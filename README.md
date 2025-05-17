@@ -144,3 +144,10 @@ dog_ai_service/
 
 ---
 
+## 수정해야 할곳
+```
+login_api.py에서 
+redirect_uri="http://localhost:8080"
+
+```
+---

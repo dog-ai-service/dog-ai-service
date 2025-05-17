@@ -4,10 +4,6 @@ import streamlit as st
 from streamlit_oauth import OAuth2Component
 # 로그인 토큰 해석
 import jwt
-# 구글 캘린더 사용을 위한 패키지
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-import datetime
 # 환경변수
 from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 
@@ -30,7 +26,7 @@ def login_api():
         token = oauth2.authorize_button(
             name="Continue with Google",
             icon="",
-            redirect_uri="http://localhost:8080",
+            redirect_uri="http://localhost:8080", # 여기 나중에 로컬 아닌 버전으로 수정해야함
             scope="openid email profile https://www.googleapis.com/auth/calendar"
         )
         if token:
