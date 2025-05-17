@@ -24,7 +24,7 @@ def login_api():
     # 사용할 계정의 Google Calendar API를 사용 상태로 바꾸어야 사용가능
     if "token" not in st.session_state:
         token = oauth2.authorize_button(
-            name="Continue with Google",
+            name="Google로 시작하기\n클릭",
             icon="",
             redirect_uri="http://localhost:8080", # 여기 나중에 로컬 아닌 버전으로 수정해야함
             scope="openid email profile https://www.googleapis.com/auth/calendar"
