@@ -2,7 +2,8 @@
 import streamlit as st
 from services.calendar_api import calendar_api
 from components.st_calendar import st_calendar
-
-def calendar_page():
-    st_calendar()
-    calendar_api()
+#사이드바 로그인
+from components.sidebar import sidebar
+sidebar()
+st_calendar()
+calendar_api()
