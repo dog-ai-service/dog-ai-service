@@ -22,6 +22,9 @@ dog_ai_service/
 ├── components/
 │   ├── prompt_box.py   : 질문창
 │   └── sidebar.py      : 사이드 바
+├── pages/
+│   ├── 
+│   └── 
 ├── agent/
 │   └── init_agent.py   : 랭체인-에이전트 초기화
 ├── services/
