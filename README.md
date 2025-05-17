@@ -11,12 +11,26 @@
 ## 디렉토리 구조
 
 ```
-/
-L app.py            : 메인기능
-L .env              : 환경변수 파일(Git예외처리 되어서 수동으로 추가해야하고 **파일명 절대 변경금지**)
-L requirements.txt  : 패키지 설치 파일
-L other_files       : 기타 파일(pdf 등)
-L .gitignore        : git 예외설정
+dog_ai_service/
+├── app.py              : 메인기능
+├── .env                : 환경변수 파일(Git예외처리 되어서 수동으로 추가해야하고 **파일명 절대 변경금지**)
+├── requirements.txt    : 패키지 설치 파일
+├── .gitignore          : git 예외설정
+├── other_files/        : 기타 파일(pdf 등)
+├── components/
+│   ├── 
+│   └──
+├── agent/
+│   ├──
+│   └──
+├── utils/
+│   ├──
+│   └──
+├── 
+├──
+├──
+└──
+
 ```
 
 ---
