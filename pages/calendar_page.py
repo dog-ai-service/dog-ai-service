@@ -1,6 +1,6 @@
 # ui
 import streamlit as st
+from services.calendar_api import calendar_api
 
 def calendar_page():
-    # 제목
-        st.title("캘린더 넣을 예정")
+    calendar_api()

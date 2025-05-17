@@ -30,7 +30,8 @@ dog_ai_service/
 ├── agent/
 │   └── init_agent.py   : 랭체인-에이전트 초기화
 ├── services/
-│   └── login_api.py    : 로그인 + 캘린더 api
+│   ├── calendar_api.py : 캘린더 api
+│   └── login_api.py    : 로그인 api
 ├──
 ├──
 └──
