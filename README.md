@@ -16,6 +16,7 @@ dog_ai_service/
 ├── .env                : 환경변수 파일(Git예외처리 되어서 수동으로 추가해야하고 **파일명 절대 변경금지**)
 ├── env_config.py       : 환경변수 로드
 ├── requirements.txt    : 패키지 설치 파일
+├── test.txt            : 테스트 파일
 ├── .gitignore          : git 예외설정
 ├── other_files/        : 기타 파일(pdf 등)
 ├── components/
