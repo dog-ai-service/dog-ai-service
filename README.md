@@ -14,16 +14,17 @@
 dog_ai_service/
 ├── app.py              : 메인기능
 ├── .env                : 환경변수 파일(Git예외처리 되어서 수동으로 추가해야하고 **파일명 절대 변경금지**)
+├── env_config.py       : 환경변수 로드
 ├── requirements.txt    : 패키지 설치 파일
 ├── .gitignore          : git 예외설정
 ├── other_files/        : 기타 파일(pdf 등)
 ├── components/
-│   ├── 
-│   └──
+│   ├── prompt_box.py   : 질문창
+│   └── sidebar.py      : 사이드 바
 ├── agent/
-│   ├──
-│   └──
-├── 
+│   └── init_agent.py   : 랭체인-에이전트 초기화
+├── services/
+│   └── login_api.py    : 로그인 + 캘린더 api
 ├──
 ├──
 └──
