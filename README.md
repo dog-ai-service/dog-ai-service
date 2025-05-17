@@ -23,8 +23,10 @@ dog_ai_service/
 │   ├── prompt_box.py   : 질문창
 │   └── sidebar.py      : 사이드 바
 ├── pages/
-│   ├── 
-│   └── 
+│   ├── __init__.py     : 모듈 정리
+│   ├── calendar_page.py: 캘린더 페이지
+│   ├── chatbot_page.py : 챗봇 페이지
+│   └── login_page.py   : 로그인 페이지
 ├── agent/
 │   └── init_agent.py   : 랭체인-에이전트 초기화
 ├── services/
