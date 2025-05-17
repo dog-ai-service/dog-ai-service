@@ -14,8 +14,8 @@ def init_chat():
         calendar_page()
     elif page == "챗봇":
         chatbot_page()
-    elif page == "사용자 정보":
-        login_page()
+    #elif page == "사용자 정보":
+    #    login_page()
     
     
 
