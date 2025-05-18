@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit_calendar import calendar as cld
+from services.calendar_api import calendar_api
 
 def st_calendar():
     calendar_options = {
@@ -14,26 +15,7 @@ def st_calendar():
         "slotMinTime": "06:00:00",
         "slotMaxTime": "18:00:00",
     }
-    calendar_events = [
-        {
-            "title": "Event 1",
-            "start": "2023-07-31T08:30:00",
-            "end": "2023-07-31T10:30:00",
-            "resourceId": "a",
-        },
-        {
-            "title": "Event 2",
-            "start": "2023-07-31T07:30:00",
-            "end": "2023-07-31T10:30:00",
-            "resourceId": "b",
-        },
-        {
-            "title": "Event 3",
-            "start": "2023-07-31T10:40:00",
-            "end": "2023-07-31T12:30:00",
-            "resourceId": "a",
-        }
-    ]
+    calendar_events = calendar_api()
     custom_css="""
         .fc-event-past {
             opacity: 0.8;

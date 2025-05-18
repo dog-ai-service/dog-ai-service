@@ -7,6 +7,8 @@ import datetime
 # 환경변수
 from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 
+
+
 def calendar_api():
     client_id=GOOGLE_CLIENT_ID
     client_secret=GOOGLE_CLIENT_SECRET
@@ -39,6 +41,9 @@ def calendar_api():
             orderBy="startTime"
         ).execute()
         events = events_result.get("items", [])
+        st.write(events)
+
+        calendar_events=[]
 
         st.subheader("📅 오늘 이후 이벤트")
         if not events:
@@ -46,3 +51,27 @@ def calendar_api():
         for event in events:
             start = event["start"].get("dateTime", event["start"].get("date"))
             st.write(f"- {start}: {event['summary']}")
+            
+            is_datetime = "dateTime" in event["start"]
+
+            start = event["start"].get("dateTime", event["start"].get("date"))
+            end = event.get("end", {}).get("dateTime", None)  # end는 없을 수도 있음
+
+            event_data = {
+                "title": event["summary"],
+                "start": start[:16] if is_datetime else start,
+                "resourceId": "a",
+            }
+
+            if is_datetime:
+                event_data["end"] = end[:16] if end else start[:16]
+                event_data["allDay"] = False
+            else:
+                event_data["allDay"] = True
+
+            calendar_events.append(event_data)
+        return calendar_events
+
+
+
+
