@@ -1,6 +1,6 @@
 # ui
 import streamlit as st
-# 구글 캘린더 사용을 위한 패키지
+# 구글 권한 사용을 위한 패키지
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import datetime
@@ -19,7 +19,7 @@ def tasks_api():
         pass
     else:
         token = st.session_state.token
-        # 캘린더에 사용을 위한 구글계정 정보를 세션에서 가져오기
+        # 테스크에 사용을 위한 구글계정 정보를 세션에서 가져오기
         creds = Credentials(
             token=token["token"]["access_token"],
             refresh_token=token.get("refresh_token"),
