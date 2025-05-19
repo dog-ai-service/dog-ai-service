@@ -27,7 +27,7 @@ def login_api():
             name="Google로 시작하기\n클릭",
             icon="",
             redirect_uri="http://localhost:8080", # 여기 나중에 로컬 아닌 버전으로 수정해야함
-            scope="openid email profile https://www.googleapis.com/auth/calendar"
+            scope="openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/tasks"
         )
         if token:
             st.session_state.token = token  # 세션에 저장

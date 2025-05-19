@@ -19,38 +19,29 @@ def calendar_api():
         st.title("로그인 안됨")
     else:
         token = st.session_state.token
-        # 캘린더에 사용을 위한 구글계정 정보를 세션에서 가져오기
+        # 구글 테스크에 사용을 위한 구글계정 정보를 세션에서 가져오기
         creds = Credentials(
             token=token["token"]["access_token"],
             refresh_token=token.get("refresh_token"),
             token_uri="https://oauth2.googleapis.com/token",
             client_id=client_id,
             client_secret=client_secret,
-            scopes=["https://www.googleapis.com/auth/calendar"]
+            scopes=["https://www.googleapis.com/auth/tasks"]
         )
-        # 캘린더 API 서비스 객체 생성
-        service = build("calendar", "v3", credentials=creds)
+        # 구글 테스크 API 서비스 객체 생성
+        service = build("tasks", "v1", credentials=creds)
         # 오늘 일정 가져오기
         time_min = "2000-01-01T00:00:00Z"
         # 캘린더에서 대충 최신 이벤트 5개 가져오기
-        events = []
-        page_token = None
-
         events_result = service.events().list(
             calendarId="primary",
             timeMin=time_min,
+            maxResults=5,
             singleEvents=True,
-            orderBy="startTime",
-            pageToken=page_token
+            orderBy="startTime"
         ).execute()
-
-        print(events_result)
-
-
-
-
-
-        '''
+        events = events_result.get("items", [])
+        st.write(events)
 
         calendar_events=[]
 
@@ -79,11 +70,8 @@ def calendar_api():
                 event_data["allDay"] = True
 
             calendar_events.append(event_data)
-        
         return calendar_events
-        '''
 
 
 
 
-calendar_api()
