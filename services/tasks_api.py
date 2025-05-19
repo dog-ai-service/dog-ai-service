@@ -1,3 +1,5 @@
+#테스트 코드
+
 # ui
 import streamlit as st
 # 구글 캘린더 사용을 위한 패키지
@@ -68,6 +70,10 @@ def tasks_api():
                 "allDay" : True,
             }
             tasks_events.append(event_data)
+
+        st.write("tasks_events")    
+        st.write(tasks_events)
+        
         return tasks_events
 
 '''
