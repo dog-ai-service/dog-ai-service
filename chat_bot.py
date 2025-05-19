@@ -40,22 +40,19 @@ dog_data =[
 # 페이지 설정
 st.set_page_config(page_title="반려견과 보호자를 위한 AI 비서", layout="wide")
 
-# def chat_stream(response):
-#     for char in response:
-#         yield char
-#         time.sleep(0.02)
-
-
-# def save_feedback(index):
-#     st.session_state.history[index]["feedback"] = st.session_state[f"feedback_{index}"]
+def chat_stream(response):
+    for char in response:
+        yield char
+        time.sleep(0.02)
 
 def init_chat():
+    if "history" not in st.session_state:
+        st.session_state.history = []
     history = StreamlitChatMessageHistory()
     st.session_state.steps = {}
     avatars = {"human": "user", "ai": "assistant"}
     memory = ConversationBufferMemory(chat_memory=history, return_messages=True, memory_key="chat_history", output_key="output")
-    for idx, message in enumerate(history.messages):
-        
+    for idx, message in enumerate(history.messages):       
         with st.chat_message(avatars[message.type]):
             for step in st.session_state.steps.get(str(idx), []):
                 if step[0].tool == "_Exception":
@@ -67,15 +64,15 @@ def init_chat():
 
     if msg := st.chat_input(placeholder="무엇이든 물어보세요"):
         st.chat_message("user").write(msg)
+        st.session_state.history.append({"role": "user", "content": msg})
         with st.chat_message("assistant"):
             cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
             cfg = RunnableConfig()
             cfg["callbacks"] = [cb]
             executor = init_agent_chain(memory)
             res = executor.invoke(msg, cfg)
-            st.write(res["output"])
+            st.write_stream(chat_stream(res["output"]))
             st.session_state.steps[str(len(history.messages) - 1)] = res["intermediate_steps"]
-
 
 def init_agent_chain(memory):
     llm = ChatOpenAI(model_name  = os.environ['OPENAI_API_MODEL'], temperature = os.environ['OPENAI_API_TEMPERATURE'], streaming = True)
