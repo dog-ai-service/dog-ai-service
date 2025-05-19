@@ -57,7 +57,6 @@ def init_chat():
 
     if msg := st.chat_input(placeholder="무엇이든 물어보세요"):
         st.chat_message("user").write(msg)
-        st.session_state.history.append({"role": "user", "content": msg})
         with st.chat_message("assistant"):
             cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
             cfg = RunnableConfig()
