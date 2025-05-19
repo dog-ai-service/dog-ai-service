@@ -31,4 +31,35 @@ def drive_api():
         # 구글 스프레드시트 API 서비스 객체 생성
         service = build("spreadsheets", "v4", credentials=creds)
 
-        return 
+        return service
+    
+def sheet_create():
+    # 서비스 객체
+    service=drive_api()
+
+    if not service:
+        return
+    
+    spreadsheet = {
+        'properties': {
+            'title': '새로운 시트 제목'
+        }
+    }
+
+    try:
+        sheet = service.spreadsheets().create(body=spreadsheet).execute()
+        spreadsheet_id = sheet['spreadsheetId']
+        st.success(f"✅ 스프레드시트 생성됨\nID: {spreadsheet_id}")
+        return spreadsheet_id
+    except Exception as e:
+        st.error(f"❌ 시트 생성 실패: {e}")
+    pass
+
+def sheet_read():
+    pass
+
+def sheet_update():
+    pass
+
+def sheet_delete():
+    pass
