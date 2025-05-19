@@ -46,8 +46,6 @@ def chat_stream(response):
         time.sleep(0.02)
 
 def init_chat():
-    if "history" not in st.session_state:
-        st.session_state.history = []
     history = StreamlitChatMessageHistory()
     st.session_state.steps = {}
     avatars = {"human": "user", "ai": "assistant"}
@@ -79,6 +77,10 @@ def init_agent_chain(memory):
     tools = [DuckDuckGoSearchRun(name="Search")]
     chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm, tools=tools)
     return AgentExecutor.from_agent_and_tools(agent=chat_agent, tools=tools, memory=memory, return_intermediate_steps=True, handle_parsing_errors=True)
+
+# 프롬프트 처리
+
+
 
 # 샘플 캘린더
 def init_calendar():
