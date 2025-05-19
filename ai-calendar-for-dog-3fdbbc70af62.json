@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "ai-calendar-for-dog",
+  "private_key_id": "3fdbbc70af62ae9f2b301acf8c52002fe2f5ae43",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDcmeY+TLetuKo6\n51Bj9YqA76vIjim1winLs5aBjz6HA3SYFQIZAIroEzPIfcyEhxTSL/QedQ2fDuNs\nxexLxj02p6Jg9XYDnfaMh+AYuI90bl13RnVCAfYnlL0rROCGEbTMbBIP5/wyE/OL\njmCXonLY3K0qxArf+wnILCI873t3578e3uWMs4YrPXr8ogdIyGefWKYKSIIy8NDJ\n3ANXVy4HqJKC801XjYFPfjEA1HO9qpQ32vDflxklTG15s5W+XKpnFhWbn2/bFUog\nw2ZAVhR2I7+yBTwRIVi7GaRdqapsp+LOfZTKMu7ZEyawjVKYUdGHccY1dVx3MI54\nDwykeE51AgMBAAECggEAFbmxX27SQxFV8H2h4OpIZOjVp+d6S5xu3dEWsDVBgO3x\n8F1XSsuPIoprleHvv5iHECkpV0uLVyAR/T8jxZWlJyoMt5RM9k+6/X2PMBgTBrIs\n0ceWWjUTvzOqiqWaoBGD1wMIp1jfMTZeTJ7tu9lDisB27GiIsqTIQpa4G3yxUe5J\nxD+PcgSEeRHp/7OLBdWCzCckZiw9vSM11mlZACsY77QJBnV9J+jrY8Y8/xM07VAc\nk+TkkUBnNIq0YRMRROECcyKxGT+WmKZ3fm6cuuYgQt/aFpr98ZUjlfusgyN8Lkek\nuXq9NGvwkn/uX7UTBhRXtmeSb1ZUZ8Ar+3WGff0F+QKBgQD0h6hwUGKbwGwvxBjP\nJ9Q2YhgdOOUOtLQeoWQz841HkoEcoNKjhK6uglbx5m00EbHklcY5fhjmUUZZ0KrZ\nKa2MCQrd1YKKbd7T9oWkFcdO4MTbud4NkMxNCHmH9/FwEyYcPUdpUVwWJtNkPgs3\nJ0MXZtt1y8OuHN/7elMiHQZgqQKBgQDm8ucGBnG30A3O4VVhNJiVZ1Z3abEdyNOt\nWBEu/SKI44UO1kcIlaLt3T3nUx1OMBwcM93IlEsknu/1G6ysXEVmzrkYOUTu220N\nleT8Bn076512K/h5wB5DaR498MVkv+ft9+SGRqEK8+R6dkIuCbBnqA61weffPDd/\nV6vfwoOC7QKBgHaN5u49KvHUgx9NdbHJ36tWN9bDJNrSZZmMKea+KDsRHqPgnP9G\nbuKQstKpIzzhb1wh+W8aYbwYn4EgGBUdjdSc9bXDtHyk9CnUFcsN/AmUFB1rqert\nzv9yImn3ngj2X73FQAAhwAHFZSvuoMVmtbJ83d3oosChoz5rei7J37OxAoGARUjH\n0AHs6bUL/22QXKoXwHKQ+SAHF6VhA5bxCMS+MIz5JPtZshSaHXwLDzPbDdLXDArv\nVTZP2Lupx0G3Kro/w9jupHrB2FqRu8qlOIqF1Y0Y3xPP5k6hhZ2qifCKd3AvFzAQ\nKcxUkeGbQLXror4bYu2DBDoY4trA134ovOcw5v0CgYEA2AcfrEqBOkrH/qxmmeN9\nJHe9z7dOF6REEpCS+3NW7tG+fvZXZpeXbEbyMWLd2VJ869xe3pMcQjDs6icYD/Xe\nXFcuSBKxIbyVJx9J/Jd0sIQZZwy0lrLkWG+9PrUy4JXMNV5pMI7Ulq9Oa+G8kZSY\nnlG3zdZPIvmknKt+bxdqlGA=\n-----END PRIVATE KEY-----\n",
+  "client_email": "ai-calendar-for-dog@ai-calendar-for-dog.iam.gserviceaccount.com",
+  "client_id": "101252438727722769415",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ai-calendar-for-dog%40ai-calendar-for-dog.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
