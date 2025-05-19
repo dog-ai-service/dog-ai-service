@@ -151,5 +151,12 @@ dog_ai_service/
 login_api.py에서 
 redirect_uri="http://localhost:8080"
 
+
+```
+---
+
+## 기능 추가 계획
+```
+MCP 를 이용한 자동화 시스템
 ```
 ---

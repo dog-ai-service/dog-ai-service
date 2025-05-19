@@ -9,7 +9,7 @@ def st_calendar():
         "headerToolbar": {
             "left": "today prev,next",
             "center": "title",
-            "right": "dayGridDay,dayGridWeek,dayGridMonth",
+            "right": "dayGridDay,dayGridWeek,dayGridMonth,dayGridYear",
         },
         "initialView": "dayGridMonth",
         "slotMinTime": "06:00:00",
