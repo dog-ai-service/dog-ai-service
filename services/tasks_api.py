@@ -9,7 +9,7 @@ from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 
 
 
-def calendar_api():
+def tasks_api():
     client_id=GOOGLE_CLIENT_ID
     client_secret=GOOGLE_CLIENT_SECRET
 
@@ -40,14 +40,69 @@ def calendar_api():
             maxResults=50,
             showCompleted=True,
             showDeleted=False,
-            dueMin='2020-01-01T00:00:00Z',
-            dueMax='2025-12-31T23:59:59Z'
+            dueMin=time_min,
+            dueMax=time_max
         ).execute()
         events = tasks_result.get("items", [])
+        # 출력 데이터 확인용
         st.write(events)
 
-        return
+        tasks_events=list()
 
+        st.subheader("📅 오늘 이후 이벤트")
+        if not events:
+            st.write("예정된 일정이 없습니다.")
+        for event in events:
+            is_summary = "title" in event
+            is_completed=True if event["status"]=="completed" else False
+            
+            # 완료된 일정
+            if is_completed:
+                continue
 
+            date=event["due"]
+
+            event_data = {
+                "title": "Task : "+(event['title'] if is_summary else "제목없음"),
+                "start": date[:10],
+                "resourceId": "a",
+                "allDay" : True,
+            }
+            tasks_events.append(event_data)
+        return tasks_events
+
+'''
+json 형식
+https://developers.google.com/workspace/tasks/reference/rest/v1/tasks?hl=ko
+
+{
+  "kind": string,
+  "id": string,
+  "etag": string,
+  "title": string,
+  "updated": string,
+  "selfLink": string,
+  "parent": string,
+  "position": string,
+  "notes": string,
+  "status": string,
+  "due": string,
+  "completed": string,
+  "deleted": boolean,
+  "hidden": boolean,
+  "links": [
+    {
+      "type": string,
+      "description": string,
+      "link": string
+    }
+  ],
+  "webViewLink": string,
+  "assignmentInfo": {
+    object (AssignmentInfo)
+  }
+}
+
+'''
 
 

@@ -44,7 +44,8 @@ def calendar_api():
             orderBy="startTime"
         ).execute()
         events = events_result.get("items", [])
-        st.write(events)
+        # 출력 데이터 확인용
+        #st.write(events)
 
         calendar_events=[]
 

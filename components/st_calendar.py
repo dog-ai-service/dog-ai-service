@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_calendar import calendar as cld
 from services.calendar_api import calendar_api
+from services.tasks_api import tasks_api
 
 def st_calendar():
     calendar_options = {
@@ -15,7 +16,15 @@ def st_calendar():
         "slotMinTime": "06:00:00",
         "slotMaxTime": "18:00:00",
     }
-    calendar_events = calendar_api()
+    calendar_events = [
+        {
+        "title":"더미",
+        "start":"2020-01-01",
+        "resourceId":"a",
+        "allDay": True,
+        }]
+    calendar_events.extend(tasks_api())
+    calendar_events.extend(calendar_api())
     custom_css="""
         .fc-event-past {
             opacity: 0.8;
@@ -30,6 +39,8 @@ def st_calendar():
             font-size: 2rem;
         }
     """
+    #테스트 출력
+    st.write(calendar_events)
 
     calendar = cld(
         events=calendar_events,
