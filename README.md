@@ -8,13 +8,26 @@
 
 ---
 
-## 역할
+## 역할 + 기록
+### 성한빈
 ```
-성한빈 : 챗봇, 강아지 정보 페이지, 구글 드라이브 연동(부)
+역할 : 챗봇, 강아지 정보 페이지, 구글 드라이브 연동(부)
 
-심규상 : 강아지 증상 데이터를 벡터 DB에 저장하고, 이를 기반으로 질문에 답하는 전문 챗봇 설계, LLM과 캘린더 연동(주)
+```
+### 심규상
+```
+역할 : 강아지 증상 데이터를 벡터 DB에 저장하고, 이를 기반으로 질문에 답하는 전문 챗봇 설계, LLM과 캘린더 연동(주)
 
-오병재 : 깃허브 관리, 로그인, 백엔드, LLM과 캘린더 연동(부), 구글 드라이브 연동(주)
+```
+### 오병재
+```
+역할 : 깃허브 관리, 로그인, 백엔드, LLM과 캘린더 연동(부), 구글 드라이브 연동(주)
+
+MCP 를 이용한 자동화 시스템
+create_schedule와 pages/calendar_page.py를 합쳐야함
+calendar_page의 문제 해결
+구글 캘린더 리마인더 추가하기
+services\AI와 pages/chatbot.py pages/health_note.py가 연동되어있음을 기억하셈
 ```
 
 ---
@@ -172,15 +185,5 @@ login_api.py에서
 redirect_uri="http://localhost:8080"
 
 
-```
----
-
-## 기능 추가 계획
-```
-MCP 를 이용한 자동화 시스템
-create_schedule와 pages/calendar_page.py를 합쳐야함
-구글 캘린더 리마인더 추가하기
-
-services\AI와 pages/chatbot.py pages/health_note.py가 연동되어있음
 ```
 ---
