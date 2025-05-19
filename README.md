@@ -99,6 +99,9 @@ dog_ai_service/
 > 
 > 아래 코드를 입력하여 각 branch가 제대로 추가되었는지 확인  
 >> git branch -r
+>
+> 특정 커밋의 수정사항 취소하고 새로 커밋
+>> git revert <되돌리고 싶은 커밋 id>
 
 ---
 
