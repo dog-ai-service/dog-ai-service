@@ -158,5 +158,9 @@ redirect_uri="http://localhost:8080"
 ## 기능 추가 계획
 ```
 MCP 를 이용한 자동화 시스템
+create_schedule와 pages/calendar_page.py를 합쳐야함
+챗봇페이지는 pages/chatbot.py하고 pages/chatbot_page.py제거
+pages/user_page.py 없애고 pages/health_note.py 넣기
+services\AI와 pages/chatbot.py pages/health_note.py가 연동되어있음
 ```
 ---
