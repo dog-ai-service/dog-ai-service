@@ -23,11 +23,17 @@
 ```
 역할 : 깃허브 관리, 로그인, 백엔드, LLM과 캘린더 연동(부), 구글 드라이브 연동(주)
 
-MCP 를 이용한 자동화 시스템
-create_schedule와 pages/calendar_page.py를 합쳐야함
-calendar_page의 문제 해결
-구글 캘린더 리마인더 추가하기
+1. 구글 드라이브 연결하기
+3. 구글 캘린더 리마인더 추가하기
+4. create_schedule와 pages/calendar_page.py를 합쳐야함
+5. 규상씨 pc에서는 캘린더 불러오기가 제대로 되지않음
+10. MCP 를 이용한 자동화 시스템
+
+
 services\AI와 pages/chatbot.py pages/health_note.py가 연동되어있음을 기억하셈
+
+
+
 ```
 
 ---
