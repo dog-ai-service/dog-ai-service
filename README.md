@@ -11,14 +11,33 @@
 ## 디렉토리 구조
 
 ```
-/
-L app.py            : 메인기능
-L chat_bot.py       : 챗봇
-L gg_drive.py       : 구글 드라이브 백업 관련
-L .env              : 환경변수 파일(Git예외처리 되어서 수동으로 추가해야하고 **파일명 절대 변경금지**)
-L requirements.txt  : 패키지 설치 파일
-L other_files       : 기타 파일(pdf 등)
-L .gitignore        : git 예외설정
+dog_ai_service/
+├── app.py              : 메인기능
+├── .env                : 환경변수 파일(Git예외처리 되어서 수동으로 추가해야하고 **파일명 절대 변경금지**)
+├── env_config.py       : 환경변수 로드
+├── requirements.txt    : 패키지 설치 파일
+├── test.txt            : 테스트 파일
+├── .gitignore          : git 예외설정
+├── other_files/        : 기타 파일(pdf 등)
+├── components/
+│   ├── prompt_box.py   : 질문창
+│   ├── sidebar.py      : 사이드 바 
+│   └── st_calendar.py  : streamlit 캘린더출력
+├── pages/
+│   ├── __init__.py     : 모듈 정리
+│   ├── calendar_page.py: 캘린더 페이지
+│   ├── chatbot_page.py : 챗봇 페이지
+│   └── login_page.py   : 로그인 페이지
+├── agent/
+│   └── init_agent.py   : 랭체인-에이전트 초기화
+├── services/
+│   ├── calendar_api.py : 캘린더 api
+│   ├── google_to_st_calendar.py        : 구글캘린더 > st캘린더로 정보 출력
+│   └── login_api.py    : 로그인 api
+├──
+├──
+└──
+
 ```
 
 ---
@@ -55,11 +74,9 @@ L .gitignore        : git 예외설정
 >
 > ### hanbin
 >> 성한빈 개인 branch
-#### hanbin-test
-성한빈 개인 test branch
 > ### kyusang
 >> 심규상 개인 branch
-> ### wanter9091
+> ### obj
 >> 오병재 개인 branch
 
 
@@ -129,3 +146,17 @@ L .gitignore        : git 예외설정
 
 ---
 
+## 수정해야 할곳
+```
+login_api.py에서 
+redirect_uri="http://localhost:8080"
+
+
+```
+---
+
+## 기능 추가 계획
+```
+MCP 를 이용한 자동화 시스템
+```
+---
