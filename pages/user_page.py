@@ -3,7 +3,7 @@ from services.login_api import login_api
 import streamlit as st
 #사이드바 로그인
 from components.sidebar import sidebar
-from components.dog_info import dog_info
+from components.dog_ui import dog_info_page
 import jwt
 sidebar()
 
@@ -16,4 +16,4 @@ else:
     st.title(f"{decoded['name']}님의 강아지 정보")
     st.markdown('---')
     # 각 강아지 카드
-    dog_info()
+    dog_info_page()
