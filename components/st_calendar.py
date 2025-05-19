@@ -1,5 +1,3 @@
-# 캘린더 출력하는 역할
-
 import streamlit as st
 from streamlit_calendar import calendar as cld
 from services.calendar_api import calendar_api
@@ -25,17 +23,12 @@ def st_calendar():
         "resourceId":"a",
         "allDay": True,
         }]
-    
     tasks_api_data=tasks_api()
     calendar_api_data=calendar_api()
-    
     if tasks_api_data is not None:
         calendar_events.extend(tasks_api())
     if calendar_api_data is not None:
         calendar_events.extend(calendar_api())
-
-    #테스트용
-    st.write(calendar_events)
 
     custom_css="""
         .fc-event-past {
@@ -51,6 +44,8 @@ def st_calendar():
             font-size: 2rem;
         }
     """
+    #테스트 출력
+    st.write(calendar_events)
 
     calendar = cld(
         events=calendar_events,

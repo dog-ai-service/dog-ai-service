@@ -49,6 +49,7 @@ def calendar_api():
 
         calendar_events=[]
 
+        st.subheader("📅 오늘 이후 이벤트")
         if not events:
             st.write("예정된 일정이 없습니다.")
         for event in events:
@@ -56,6 +57,7 @@ def calendar_api():
             is_summary = "summary" in event
 
             start = event["start"].get("dateTime", event["start"].get("date"))
+            st.write(f"- {start}: {event['summary'] if is_summary else "제목없음"}")
             
             start = event["start"].get("dateTime", event["start"].get("date"))
             end = event.get("end", {}).get("dateTime", None)  # end는 없을 수도 있음

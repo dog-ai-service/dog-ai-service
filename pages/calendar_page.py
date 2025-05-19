@@ -8,13 +8,7 @@ from services.tasks_api import tasks_api
 from components.st_calendar import st_calendar
 #사이드바 로그인
 from components.sidebar import sidebar
-
-# 해당 페이지 사이드바 출력
 sidebar()
-
-# 캘린더 출력
 st_calendar()
-
-#
 calendar_api()
 tasks_api()

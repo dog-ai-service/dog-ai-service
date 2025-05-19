@@ -44,6 +44,8 @@ def tasks_api():
             dueMax=time_max
         ).execute()
         events = tasks_result.get("items", [])
+        # 출력 데이터 확인용
+        st.write(events)
 
         tasks_events=list()
 
