@@ -131,13 +131,27 @@ def sheet_read(spreadsheet_id):
         
         #테스트
         st.write("시트의 데이터")
-        st.table(values)  # st표
-        st.write(values)  # st표
+        values=json_key_change(values)  # 키 변경
+        st.table(values)    # st표
+        st.write(values)    # st표
         return values
 
     except Exception as e:
         st.error(f"시트 읽기 실패 오류 : {e}")
         return []
+
+# json의 디폴트 키가 숫자여서 컬럼으로 변경
+def json_key_change(values):
+    if not values or len(values)<2: # 값이 없으면 컷
+        return []
+    result=[]
+    for value in values[1:]:
+        new_dict={values[0][i]:value[i] if not (value[i]=="공백") else "공백"for i in range(len(values[0]))}
+        result.append(new_dict)
+    return result
+
+
+
 
 # id값으로 시트에 정보 넣기
 def sheet_write(spreadsheet_id, dogs):
@@ -154,7 +168,7 @@ def sheet_write(spreadsheet_id, dogs):
     # 나머지 행: 실제 데이터
     values = [header]
     for dog in dogs:
-        row = [dog.get(col, "") for col in header]
+        row = [dog.get(col, "공백") for col in header]
         values.append(row)
 
     body = {
