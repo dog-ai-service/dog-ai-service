@@ -13,6 +13,7 @@
 ```
 /
 L app.py            : 메인기능
+L chat_bot.py       : 챗봇
 L .env              : 환경변수 파일(Git예외처리 되어서 수동으로 추가해야하고 **파일명 절대 변경금지**)
 L requirements.txt  : 패키지 설치 파일
 L other_files       : 기타 파일(pdf 등)
@@ -51,9 +52,9 @@ L .gitignore        : git 예외설정
 >> 만일의 사태를 대비한 백업용 branch  
 >> main이나 test에서 이상이 없다면 주기적으로 백업해두자
 >
-> ### []
+> ### hanbin
 >> 성한빈 개인 branch
-> ### []
+> ### kyusang
 >> 심규상 개인 branch
 > ### wanter9091
 >> 오병재 개인 branch

@@ -1,25 +1,20 @@
 import streamlit as st
 from streamlit_calendar import calendar
 from langchain_openai import ChatOpenAI
-from langchain.schema import HumanMessage
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_community.callbacks import StreamlitCallbackHandler
-from langchain.agents import AgentExecutor, load_tools, create_openai_tools_agent, ConversationalChatAgent
+from langchain.agents import AgentExecutor,ConversationalChatAgent
 from langchain.memory import ConversationBufferMemory
-from langchain import hub
-from langchain_core.outputs import LLMResult
-from typing import Any
-from datetime import timedelta, datetime
-# LLM 모델 출력값 파싱 처리, 문자열 형태일 때 사용할 수 있는 파서
-from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnableConfig
+from langchain_community.tools import DuckDuckGoSearchRun
+
 # 프럼프트
 # from langchain_core.msgs import ChatmsgTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
 import os
 import re
 import time
-from langchain_core.runnables import RunnableConfig
-from langchain_community.tools import DuckDuckGoSearchRun
+
 
 load_dotenv()
 # print(os.environ['OPENAI_API_KEY'])
@@ -80,6 +75,7 @@ def init_agent_chain(memory):
 
 # 프롬프트 처리
 
+# 채팅기록 장기기억 처리
 
 
 # 샘플 캘린더
