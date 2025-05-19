@@ -1,5 +1,6 @@
 streamlit
 streamlit-chat
+streamlit-calendar
 langchainhub
 wikipedia
 duckduckgo-search
@@ -8,3 +9,6 @@ langchain
 langchain-openai
 langchain-community
 python-dotenv
+google-auth 
+google-auth-oauthlib 
+google-api-python-client

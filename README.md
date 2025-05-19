@@ -12,11 +12,22 @@
 
 ```
 /
-L app.py            : 메인기능
-L .env              : 환경변수 파일(Git예외처리 되어서 수동으로 추가해야하고 **파일명 절대 변경금지**)
-L requirements.txt  : 패키지 설치 파일
-L other_files       : 기타 파일(pdf 등)
-L .gitignore        : git 예외설정
+L AI (Ai 관련 모듈)
+    L extract_event_info.py : 사용자가 일정 생성을 위해 프롬프트에 자연어로 입력하면, 해당 자연어에서 json 형식으로 정보를 추출해주는 모듈
+    L summation.py : 일정 요약을 눌렀을때, 오늘의 일정 목록이 모델의 입력으로 들어가 하루 일정을 요약해주는 모듈
+L googlecalendar ( 구글 캘린더 api 관련 )
+    L get_today_events.py : 현재 캘린더에 저장되어 있는 오늘 이벤트 목록을 불러오는 모듈
+L login ( 로그인 관련 )
+    L app_auth.py : 로그인 페이지
+L pages (화면 구성 페이지들)
+    L chatbot.py : 챗봇 페이지 
+    L health_note.py : 건강 노트 페이지 
+    L user_info.py : 사용자 정보 페이지
+L index_db_backup : 증상 데이터가 들어있는 벡터디비
+L app.py : 실제 실행하는 파일
+L create_schedle.py : 캘린더 하단에 나오는 프롬프트, 일정 생성, 일정 요약 화면을 구성
+L make_calendar.py : 캘린더를 만들어주는 모듈
+L sidebar.py : 사이드바를 만들어주는 모듈
 ```
 
 ---
