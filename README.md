@@ -21,13 +21,15 @@ dog_ai_service/
 ├── other_files/        : 기타 파일(pdf 등)
 ├── components/
 │   ├── prompt_box.py   : 질문창
-│   ├── sidebar.py      : 사이드 바 
+│   ├── sidebar.py      : 사이드 바
+│   ├── dog_data.py     : dog_ui 데이터
+│   ├── dog_ui.py       : 강아지 정보 UI
 │   └── st_calendar.py  : streamlit 캘린더출력
 ├── pages/
 │   ├── __init__.py     : 모듈 정리
 │   ├── calendar_page.py: 캘린더 페이지
 │   ├── chatbot_page.py : 챗봇 페이지
-│   └── login_page.py   : 로그인 페이지
+│   └── user_page.py    : 사용자 정보 페이지
 ├── agent/
 │   └── init_agent.py   : 랭체인-에이전트 초기화
 ├── services/
@@ -74,6 +76,8 @@ dog_ai_service/
 >
 > ### hanbin
 >> 성한빈 개인 branch
+>> #### hanbin-test
+>>> 성한빈 개인 테스트 branch
 > ### kyusang
 >> 심규상 개인 branch
 > ### obj
