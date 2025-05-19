@@ -54,7 +54,7 @@ def create_folder():
         st.success(f"✅ 폴더 '{folder_name}' 생성 완료")
         return folder.get('id')
 
-# 시트 생성
+# 시트 생성하고 시트의 id값 반환
 def sheet_create():
     creds = drive_creds()
     if not creds:
@@ -107,11 +107,69 @@ def sheet_create():
 
     return spreadsheet_id
 
-def sheet_read():
+# id값으로시트 정보 가져오기(미구현)
+def sheet_read(spreadsheet_id=None):
+    sheet_service = build("sheets", "v4", credentials=drive_creds())
+
     pass
 
-def sheet_update():
-    pass
+# id값으로 시트에 정보 넣기
+def sheet_write(spreadsheet_id, dogs):
+    creds = drive_creds()
+    if not creds:
+        st.error("❌ 인증되지 않았습니다. 로그인 후 다시 시도하세요.")
+        return
+
+    sheet_service = build("sheets", "v4", credentials=creds)
+
+    # 첫 번째 행: 헤더
+    header = ["이름", "나이", "몸무게", "견종", "성별", "예방접종", "중성화", "특이사항"]
+
+    # 나머지 행: 실제 데이터
+    values = [header]
+    for dog in dogs:
+        row = [dog.get(col, "") for col in header]
+        values.append(row)
+
+    body = {
+        "values": values
+    }
+
+    try:
+        response = sheet_service.spreadsheets().values().update(
+            spreadsheetId=spreadsheet_id,
+            range="시트1!A1",  # A1부터 시작, 한국인 계정이면 시트명 디폴트가 시트1이라 그런지 sheet1이 아닌 시트1로해야함
+            valueInputOption="RAW",
+            body=body
+        ).execute()
+        st.success("✅ 강아지 정보가 성공적으로 입력되었습니다.")
+    except Exception as e:
+        st.error(f"❌ 시트 입력 중 오류 발생: {e}")
 
 def sheet_delete():
     pass
+
+'''
+dogs = [
+    {
+        "이름": "뽀삐",
+        "나이": "3",
+        "몸무게": "5.2",
+        "견종": "말티즈",
+        "성별": "암컷",
+        "예방접종": "O",
+        "중성화": "X",
+        "특이사항": "알레르기 있음"
+    },
+    {
+        "이름": "초코",
+        "나이": "5",
+        "몸무게": "8.1",
+        "견종": "시바견",
+        "성별": "수컷",
+        "예방접종": "X",
+        "중성화": "O",
+        "특이사항": "사람을 좋아함"
+    }
+]
+'''
