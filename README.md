@@ -122,6 +122,8 @@ dog_ai_service/
 > branch 병합하기(현재 branch를 대상으로 명령어의 branch를 덮어씌우는 느낌)
 >> git merge [branch명]
 >
+> 특정 커밋의 수정사항 취소하고 새로 커밋하고 esc한 후에 :q 엔터
+>> git revert <되돌리고 싶은 커밋 id>
 
 ---
 
