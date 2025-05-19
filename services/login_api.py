@@ -40,3 +40,5 @@ def login_api():
         st.success(f"✅ {decoded['name']}님 로그인됨")
         st.image(decoded['picture'], width=100)
         st.write(f"이메일: {decoded['email']}")
+    print("token : ", token)
+    print("decoded : ", decoded)
