@@ -60,10 +60,10 @@ dog_ai_service/
     ├── tasks_api.py              : 구글 Tasks API 처리
     ├── calendar_api.py           : 캘린더 API 처리
     ├── login_api.py              : 로그인 처리 API
-    ├── get_today_events.py       : (sks)
+    ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈
     └── AI/                       : AI 관련 기능 모듈
-        ├── extract_event_info.py : (sks)
-        └── summation.py          : (sks)
+        ├── extract_event_info.py : 자연어(사용자 프롬프트)를 json으로 변환하는 모듈
+        └── summation.py          : 당일 이벤트를 입력으로 받고, 요약하는 모듈
 
 
 ```
