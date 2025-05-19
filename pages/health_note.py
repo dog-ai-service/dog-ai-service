@@ -2,8 +2,10 @@ import streamlit as st
 import os
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage
-from sidebar import sidebar
 from datetime import date
+#사이드바 로그인
+from components.sidebar import sidebar
+
 
 def health_note():
     st.title("🐶 강아지 헬스 노트 자동 작성기")

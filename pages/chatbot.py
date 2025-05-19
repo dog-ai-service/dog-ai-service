@@ -2,8 +2,6 @@
     챗봇 페이지 코드
         - ai_res_type으로 일반 챗봇과 증상 챗봇을 구분함.
 '''
-
-from sidebar import sidebar
 import streamlit as st
 from dotenv import load_dotenv
 import os
@@ -16,7 +14,8 @@ from langchain.memory import ConversationBufferMemory
 from langchain import hub
 from llama_index.core import StorageContext, load_index_from_storage
 from llama_index.core.callbacks.base import CallbackManager
-
+#사이드바 로그인
+from components.sidebar import sidebar
 
 
 load_dotenv()
