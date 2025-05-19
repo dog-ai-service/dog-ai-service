@@ -19,7 +19,7 @@ def calendar_api():
         st.title("로그인 안됨")
     else:
         token = st.session_state.token
-        # 구글 테스크에 사용을 위한 구글계정 정보를 세션에서 가져오기
+        # 캘린더에 사용을 위한 구글계정 정보를 세션에서 가져오기
         creds = Credentials(
             token=token["token"]["access_token"],
             refresh_token=token.get("refresh_token"),
@@ -30,47 +30,23 @@ def calendar_api():
         )
         # 구글 테스크 API 서비스 객체 생성
         service = build("tasks", "v1", credentials=creds)
-        # 오늘 일정 가져오기
-        time_min = "2000-01-01T00:00:00Z"
-        # 캘린더에서 대충 최신 이벤트 5개 가져오기
-        events_result = service.events().list(
-            calendarId="primary",
-            timeMin=time_min,
-            maxResults=5,
-            singleEvents=True,
-            orderBy="startTime"
+        # 2020년부터 가져오기
+        time_min = "2020-01-01T00:00:00Z"
+        # 2020년부터 가져오기
+        time_max = "2030-01-01T00:00:00Z"
+        # 구글 테스크에서 대충 최신 이벤트 50개 가져오기
+        tasks_result = service.tasks().list(
+            tasklist='@default',
+            maxResults=50,
+            showCompleted=True,
+            showDeleted=False,
+            dueMin='2020-01-01T00:00:00Z',
+            dueMax='2025-12-31T23:59:59Z'
         ).execute()
-        events = events_result.get("items", [])
+        events = tasks_result.get("items", [])
         st.write(events)
 
-        calendar_events=[]
-
-        st.subheader("📅 오늘 이후 이벤트")
-        if not events:
-            st.write("예정된 일정이 없습니다.")
-        for event in events:
-            start = event["start"].get("dateTime", event["start"].get("date"))
-            st.write(f"- {start}: {event['summary']}")
-            
-            is_datetime = "dateTime" in event["start"]
-
-            start = event["start"].get("dateTime", event["start"].get("date"))
-            end = event.get("end", {}).get("dateTime", None)  # end는 없을 수도 있음
-
-            event_data = {
-                "title": event["summary"],
-                "start": start[:16] if is_datetime else start,
-                "resourceId": "a",
-            }
-
-            if is_datetime:
-                event_data["end"] = end[:16] if end else start[:16]
-                event_data["allDay"] = False
-            else:
-                event_data["allDay"] = True
-
-            calendar_events.append(event_data)
-        return calendar_events
+        return
 
 
 

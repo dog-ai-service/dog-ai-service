@@ -30,13 +30,16 @@ def calendar_api():
         )
         # 캘린더 API 서비스 객체 생성
         service = build("calendar", "v3", credentials=creds)
-        # 오늘 일정 가져오기
-        now = datetime.datetime.utcnow().isoformat() + "Z"
-        # 캘린더에서 대충 최신 이벤트 5개 가져오기
+        # 2020년부터 가져오기
+        time_min = "2020-01-01T00:00:00Z"
+        # 2020년부터 가져오기
+        time_max = "2030-01-01T00:00:00Z"
+        # 캘린더에서 대충 최신 이벤트 50개 가져오기
         events_result = service.events().list(
             calendarId="primary",
-            timeMin=now,
-            maxResults=5,
+            timeMin=time_min,
+            timeMax=time_max,
+            maxResults=50,
             singleEvents=True,
             orderBy="startTime"
         ).execute()
@@ -49,16 +52,17 @@ def calendar_api():
         if not events:
             st.write("예정된 일정이 없습니다.")
         for event in events:
-            start = event["start"].get("dateTime", event["start"].get("date"))
-            st.write(f"- {start}: {event['summary']}")
-            
             is_datetime = "dateTime" in event["start"]
+            is_summary = "summary" in event
 
+            start = event["start"].get("dateTime", event["start"].get("date"))
+            st.write(f"- {start}: {event['summary'] if is_summary else "제목없음"}")
+            
             start = event["start"].get("dateTime", event["start"].get("date"))
             end = event.get("end", {}).get("dateTime", None)  # end는 없을 수도 있음
 
             event_data = {
-                "title": event["summary"],
+                "title": event['summary'] if is_summary else "제목없음",
                 "start": start[:16] if is_datetime else start,
                 "resourceId": "a",
             }
