@@ -10,11 +10,11 @@
 
 ## 역할
 ```
-성한빈 : 
+성한빈 : 챗봇
 
-심규상 :  
+심규상 : 강아지 증상 데이터를 벡터 DB에 저장하고, 이를 기반으로 질문에 답하는 전문 챗봇 설계, LLM과 캘린더 연동(주)
 
-오병재 : 
+오병재 : 로그인, 백엔드, LLM과 캘린더 연동(부)
 ```
 
 ---
@@ -23,31 +23,35 @@
 
 ```
 dog_ai_service/
-├── app.py              : 메인기능
-├── .env                : 환경변수 파일(Git예외처리 되어서 수동으로 추가해야하고 **파일명 절대 변경금지**)
-├── env_config.py       : 환경변수 로드
-├── requirements.txt    : 패키지 설치 파일
-├── test.txt            : 테스트 파일
-├── .gitignore          : git 예외설정
-├── other_files/        : 기타 파일(pdf 등)
-├── components/
-│   ├── prompt_box.py   : 질문창
-│   ├── sidebar.py      : 사이드 바 
-│   └── st_calendar.py  : streamlit 캘린더출력
-├── pages/
-│   ├── __init__.py     : 모듈 정리
-│   ├── calendar_page.py: 캘린더 페이지
-│   ├── chatbot_page.py : 챗봇 페이지
-│   └── login_page.py   : 로그인 페이지
-├── agent/
-│   └── init_agent.py   : 랭체인-에이전트 초기화
-├── services/
-│   ├── calendar_api.py : 캘린더 api
-│   ├── google_to_st_calendar.py        : 구글캘린더 > st캘린더로 정보 출력
-│   └── login_api.py    : 로그인 api
-├──
-├──
-└──
+├── app.py                        : 메인 기능 실행 파일
+├── .env                          : 환경변수 파일 (Git 예외처리됨, **파일명 절대 변경 금지**)
+├── env_config.py                 : 환경변수 로드 모듈
+├── requirements.txt              : 패키지 설치 파일
+├── test.py                       : 테스트용 파일
+├── .gitignore                    : Git 예외 설정
+│
+├── other_files/                  : 기타 파일 (예: PDF 등)
+│   └── 반려견_AI_비서_기획안_최종.pdf
+│
+├── components/                   : Streamlit UI 컴포넌트
+│   ├── prompt_box.py             : 질문 입력창 컴포넌트 (**삭제 예정**)
+│   ├── sidebar.py                : 사이드바 UI 컴포넌트
+│   └── st_calendar.py            : Streamlit용 캘린더 출력 컴포넌트
+│
+├── pages/                        : Streamlit 내비게이션 페이지들
+│   ├── calendar_page.py          : 캘린더 페이지
+│   ├── chatbot.py                : 챗봇 페이지
+│   └── health_note.py            : 건강 노트 페이지
+│
+└── services/                     : 서비스 API 모듈
+    ├── tasks_api.py              : 구글 Tasks API 처리
+    ├── calendar_api.py           : 캘린더 API 처리
+    ├── login_api.py              : 로그인 처리 API
+    ├── get_today_events.py       : (sks)
+    └── AI/                       : AI 관련 기능 모듈
+        ├── extract_event_info.py : (sks)
+        └── summation.py          : (sks)
+
 
 ```
 
