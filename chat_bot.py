@@ -4,7 +4,7 @@ from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_community.callbacks import StreamlitCallbackHandler
-from langchain.agents import AgentExecutor, load_tools, create_openai_tools_agent
+from langchain.agents import AgentExecutor, load_tools, create_openai_tools_agent, ConversationalChatAgent
 from langchain.memory import ConversationBufferMemory
 from langchain import hub
 from langchain_core.outputs import LLMResult
@@ -13,11 +13,13 @@ from datetime import timedelta, datetime
 # LLM 모델 출력값 파싱 처리, 문자열 형태일 때 사용할 수 있는 파서
 from langchain_core.output_parsers import StrOutputParser
 # 프럼프트
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+# from langchain_core.msgs import ChatmsgTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
 import os
 import re
 import time
+from langchain_core.runnables import RunnableConfig
+from langchain_community.tools import DuckDuckGoSearchRun
 
 load_dotenv()
 # print(os.environ['OPENAI_API_KEY'])
@@ -38,68 +40,48 @@ dog_data =[
 # 페이지 설정
 st.set_page_config(page_title="반려견과 보호자를 위한 AI 비서", layout="wide")
 
-def chat_stream(response):
-    for char in response:
-        yield char
-        time.sleep(0.02)
+# def chat_stream(response):
+#     for char in response:
+#         yield char
+#         time.sleep(0.02)
 
 
-def save_feedback(index):
-    st.session_state.history[index]["feedback"] = st.session_state[f"feedback_{index}"]
+# def save_feedback(index):
+#     st.session_state.history[index]["feedback"] = st.session_state[f"feedback_{index}"]
 
 def init_chat():
-    if "history" not in st.session_state:
-        st.session_state.history = []
-
-    for i, message in enumerate(st.session_state.history):
+    history = StreamlitChatMessageHistory()
+    st.session_state.steps = {}
+    avatars = {"human": "user", "ai": "assistant"}
+    memory = ConversationBufferMemory(chat_memory=history, return_messages=True, memory_key="chat_history", output_key="output")
+    for idx, message in enumerate(history.messages):
         
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
-            if message["role"] == "assistant":
-                feedback = message.get("feedback", None)
-                st.session_state[f"feedback_{i}"] = feedback
-                st.feedback(
-                    "thumbs",
-                    key=f"feedback_{i}",
-                    disabled=feedback is not None,
-                    on_change=save_feedback,
-                    args=[i],
-                )
+        with st.chat_message(avatars[message.type]):
+            for step in st.session_state.steps.get(str(idx), []):
+                if step[0].tool == "_Exception":
+                    continue
+                with st.status(f"**{step[0].tool}**: {step[0].tool_input}", state="complete"):
+                    st.write(step[0].log)
+                    st.write(step[1])
+            st.write(message.content)
 
-    if prompt := st.chat_input("Say something"):
-        with st.chat_message("user"):
-            st.write(prompt)
-        st.session_state.history.append({"role": "user", "content": prompt})
+    if msg := st.chat_input(placeholder="무엇이든 물어보세요"):
+        st.chat_message("user").write(msg)
         with st.chat_message("assistant"):
-            cb = StreamlitCallbackHandler(st.container())
-            agent_chain = init_agent_chain(st.session_state.history)
-            res = agent_chain.invoke(
-                    {"input":prompt},  # 사용자의 질의
-                    {"callbacks":[cb]} # 콜백
-                )
-            response = st.write_stream(chat_stream(res['output']))
-            st.feedback(
-                "thumbs",
-                key=f"feedback_{len(st.session_state.history)}",
-                on_change=save_feedback,
-                args=[len(st.session_state.history)],
-            )
-        st.session_state.history.append({"role": "assistant", "content": response})
-        # print("user : ", prompt)
-        # print("ai : ", response)
-        # print("history : ", st.session_state.history)
+            cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
+            cfg = RunnableConfig()
+            cfg["callbacks"] = [cb]
+            executor = init_agent_chain(memory)
+            res = executor.invoke(msg, cfg)
+            st.write(res["output"])
+            st.session_state.steps[str(len(history.messages) - 1)] = res["intermediate_steps"]
 
-def init_agent_chain(history):
-    llm = ChatOpenAI(model_name  = os.environ['OPENAI_API_MODEL'], temperature = os.environ['OPENAI_API_TEMPERATURE'])
-    tools = load_tools([#"ddg-search", 
-                        "wikipedia"])
-    hub_tool = hub.pull('hwchase17/openai-tools-agent')
-    memory = ConversationBufferMemory(chat_memory=history, 
-                                      memory_key='my_first_chat',
-                                      return_messages=True
-                                      )
-    agent = create_openai_tools_agent(llm, tools, hub_tool)
-    return AgentExecutor(agent=agent, tools=tools, memory=memory)
+
+def init_agent_chain(memory):
+    llm = ChatOpenAI(model_name  = os.environ['OPENAI_API_MODEL'], temperature = os.environ['OPENAI_API_TEMPERATURE'], streaming = True)
+    tools = [DuckDuckGoSearchRun(name="Search")]
+    chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm, tools=tools)
+    return AgentExecutor.from_agent_and_tools(agent=chat_agent, tools=tools, memory=memory, return_intermediate_steps=True, handle_parsing_errors=True)
 
 # 샘플 캘린더
 def init_calendar():
