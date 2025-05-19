@@ -26,9 +26,9 @@ def st_calendar():
     tasks_api_data=tasks_api()
     calendar_api_data=calendar_api()
     if tasks_api_data is not None:
-        calendar_events.extend(tasks_api())
+        calendar_events.extend(tasks_api_data)
     if calendar_api_data is not None:
-        calendar_events.extend(calendar_api())
+        calendar_events.extend(calendar_api_data)
 
     custom_css="""
         .fc-event-past {
@@ -45,7 +45,7 @@ def st_calendar():
         }
     """
     #테스트 출력
-    st.write(calendar_events)
+    #st.write(calendar_events)
 
     calendar = cld(
         events=calendar_events,

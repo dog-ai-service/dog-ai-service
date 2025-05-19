@@ -10,5 +10,3 @@ from components.st_calendar import st_calendar
 from components.sidebar import sidebar
 sidebar()
 st_calendar()
-calendar_api()
-tasks_api()

@@ -16,7 +16,7 @@ def calendar_api():
     # 세션 상태에 token이 없으면 로그인 버튼 표시
     # 사용할 계정의 Google Calendar API를 사용 상태로 바꾸어야 사용가능
     if "token" not in st.session_state:
-        st.title("로그인 안됨")
+        pass
     else:
         token = st.session_state.token
         # 캘린더에 사용을 위한 구글계정 정보를 세션에서 가져오기
@@ -49,16 +49,12 @@ def calendar_api():
 
         calendar_events=[]
 
-        st.subheader("📅 오늘 이후 이벤트")
         if not events:
             st.write("예정된 일정이 없습니다.")
         for event in events:
             is_datetime = "dateTime" in event["start"]
             is_summary = "summary" in event
 
-            start = event["start"].get("dateTime", event["start"].get("date"))
-            st.write(f"- {start}: {event['summary'] if is_summary else "제목없음"}")
-            
             start = event["start"].get("dateTime", event["start"].get("date"))
             end = event.get("end", {}).get("dateTime", None)  # end는 없을 수도 있음
 
