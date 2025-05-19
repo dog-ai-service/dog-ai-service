@@ -107,11 +107,37 @@ def sheet_create():
 
     return spreadsheet_id
 
-# id값으로시트 정보 가져오기(미구현)
-def sheet_read(spreadsheet_id=None):
-    sheet_service = build("sheets", "v4", credentials=drive_creds())
+# id값으로시트 정보 가져오기
+def sheet_read(spreadsheet_id):
+    creds = drive_creds()
+    if not creds:
+        st.error("❌ 인증되지 않았습니다. 로그인 후 다시 시도하세요.")
+        return
 
-    pass
+    sheet_service = build("sheets", "v4", credentials=creds)
+
+    try:
+        sheet_service = build("sheets", "v4", credentials=creds)
+        response = sheet_service.spreadsheets().values().get(
+            spreadsheetId=spreadsheet_id,
+            range="시트1!A1:Z100"#H100이여도 컬럼엔 문제없지만 일단 넉넉하게 잡기
+        ).execute()
+
+        values = response.get("values", [])
+        
+        if not values:
+            st.info("시트에 데이터 없음")
+            return []
+        
+        #테스트
+        st.write("시트의 데이터")
+        st.table(values)  # st표
+        st.write(values)  # st표
+        return values
+
+    except Exception as e:
+        st.error(f"시트 읽기 실패 오류 : {e}")
+        return []
 
 # id값으로 시트에 정보 넣기
 def sheet_write(spreadsheet_id, dogs):
@@ -122,7 +148,7 @@ def sheet_write(spreadsheet_id, dogs):
 
     sheet_service = build("sheets", "v4", credentials=creds)
 
-    # 첫 번째 행: 헤더
+    # 첫 번째 행: 헤더(컬럼)
     header = ["이름", "나이", "몸무게", "견종", "성별", "예방접종", "중성화", "특이사항"]
 
     # 나머지 행: 실제 데이터
@@ -144,7 +170,7 @@ def sheet_write(spreadsheet_id, dogs):
         ).execute()
         st.success("✅ 강아지 정보가 성공적으로 입력되었습니다.")
     except Exception as e:
-        st.error(f"❌ 시트 입력 중 오류 발생: {e}")
+        st.error(f"오류 : {e}")
 
 def sheet_delete():
     pass

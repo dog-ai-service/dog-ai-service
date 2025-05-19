@@ -3,7 +3,7 @@ import streamlit as st
 # 사이드바 로그인
 from components.sidebar import sidebar
 #
-from services.drive_api import sheet_create, sheet_write
+from services.drive_api import sheet_create, sheet_write, sheet_read
 
 sidebar()
 sheet=None
@@ -44,5 +44,6 @@ if st.button("정보추가"):
             spreadsheet_id=st.session_state.get("sheet","미기입"),
             dogs=dogs,
             )
+        sheet_read(spreadsheet_id=st.session_state.get("sheet","미기입"))
         
 
