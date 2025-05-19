@@ -8,15 +8,64 @@
 
 ---
 
+## 역할 + 기록
+### 성한빈
+```
+역할 : 챗봇, 강아지 정보 페이지, 구글 드라이브 연동(부)
+
+```
+### 심규상
+```
+역할 : 강아지 증상 데이터를 벡터 DB에 저장하고, 이를 기반으로 질문에 답하는 전문 챗봇 설계, LLM과 캘린더 연동(주)
+
+```
+### 오병재
+```
+역할 : 깃허브 관리, 로그인, 백엔드, LLM과 캘린더 연동(부), 구글 드라이브 연동(주)
+
+MCP 를 이용한 자동화 시스템
+create_schedule와 pages/calendar_page.py를 합쳐야함
+calendar_page의 문제 해결
+구글 캘린더 리마인더 추가하기
+services\AI와 pages/chatbot.py pages/health_note.py가 연동되어있음을 기억하셈
+```
+
+---
+랭체인 에이전트 이용해서 챗봇 응답처리
 ## 디렉토리 구조
 
 ```
-/
-L app.py            : 메인기능
-L .env              : 환경변수 파일(Git예외처리 되어서 수동으로 추가해야하고 **파일명 절대 변경금지**)
-L requirements.txt  : 패키지 설치 파일
-L other_files       : 기타 파일(pdf 등)
-L .gitignore        : git 예외설정
+dog_ai_service/
+├── app.py                        : 메인 기능 실행 파일
+├── .env                          : 환경변수 파일 (Git 예외처리됨, **파일명 절대 변경 금지**)
+├── env_config.py                 : 환경변수 로드 모듈
+├── requirements.txt              : 패키지 설치 파일
+├── test.py                       : 테스트용 파일
+├── .gitignore                    : Git 예외 설정
+│
+├── other_files/                  : 기타 파일 (예: PDF 등)
+│   └── 반려견_AI_비서_기획안_최종.pdf
+│
+├── components/                   : Streamlit UI 컴포넌트
+│   ├── prompt_box.py             : 질문 입력창 컴포넌트 (**삭제 예정**)
+│   ├── sidebar.py                : 사이드바 UI 컴포넌트
+│   └── st_calendar.py            : Streamlit용 캘린더 출력 컴포넌트
+│
+├── pages/                        : Streamlit 내비게이션 페이지들
+│   ├── calendar_page.py          : 캘린더 페이지
+│   ├── chatbot.py                : 챗봇 페이지
+│   └── health_note.py            : 건강 노트 페이지
+│
+└── services/                     : 서비스 API 모듈
+    ├── tasks_api.py              : 구글 Tasks API 처리
+    ├── calendar_api.py           : 캘린더 API 처리
+    ├── login_api.py              : 로그인 처리 API
+    ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈
+    └── AI/                       : AI 관련 기능 모듈
+        ├── extract_event_info.py : 자연어(사용자 프롬프트)를 json으로 변환하는 모듈
+        └── summation.py          : 당일 이벤트를 입력으로 받고, 요약하는 모듈
+
+
 ```
 
 ---
@@ -51,11 +100,11 @@ L .gitignore        : git 예외설정
 >> 만일의 사태를 대비한 백업용 branch  
 >> main이나 test에서 이상이 없다면 주기적으로 백업해두자
 >
-> ### []
+> ### hanbin
 >> 성한빈 개인 branch
-> ### []
+> ### kyusang
 >> 심규상 개인 branch
-> ### wanter9091
+> ### obj
 >> 오병재 개인 branch
 
 
@@ -78,6 +127,9 @@ L .gitignore        : git 예외설정
 > 
 > 아래 코드를 입력하여 각 branch가 제대로 추가되었는지 확인  
 >> git branch -r
+>
+> 특정 커밋의 수정사항 취소하고 새로 커밋
+>> git revert <되돌리고 싶은 커밋 id>
 
 ---
 
@@ -98,6 +150,8 @@ L .gitignore        : git 예외설정
 > branch 병합하기(현재 branch를 대상으로 명령어의 branch를 덮어씌우는 느낌)
 >> git merge [branch명]
 >
+> 특정 커밋의 수정사항 취소하고 새로 커밋하고 esc한 후에 :q 엔터
+>> git revert <되돌리고 싶은 커밋 id>
 
 ---
 
@@ -125,3 +179,11 @@ L .gitignore        : git 예외설정
 
 ---
 
+## 수정해야 할곳
+```
+login_api.py에서 
+redirect_uri="http://localhost:8080"
+
+
+```
+---
