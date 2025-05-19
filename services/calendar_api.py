@@ -26,7 +26,7 @@ def calendar_api():
             token_uri="https://oauth2.googleapis.com/token",
             client_id=client_id,
             client_secret=client_secret,
-            scopes=["https://www.googleapis.com/auth/calendar.readonly"]
+            scopes=["https://www.googleapis.com/auth/calendar"]
         )
         # 캘린더 API 서비스 객체 생성
         service = build("calendar", "v3", credentials=creds)
