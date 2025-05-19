@@ -23,8 +23,13 @@ def st_calendar():
         "resourceId":"a",
         "allDay": True,
         }]
-    calendar_events.extend(tasks_api())
-    calendar_events.extend(calendar_api())
+    tasks_api_data=tasks_api()
+    calendar_api_data=calendar_api()
+    if tasks_api_data is not None:
+        calendar_events.extend(tasks_api())
+    if calendar_api_data is not None:
+        calendar_events.extend(calendar_api())
+
     custom_css="""
         .fc-event-past {
             opacity: 0.8;
