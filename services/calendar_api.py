@@ -9,10 +9,7 @@ from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 # 설정값
 from config import TIME_MIN,TIME_MAX,MAX_RESULTS
 
-
-
-
-def calendar_api():
+def calendar_service():
     client_id=GOOGLE_CLIENT_ID
     client_secret=GOOGLE_CLIENT_SECRET
 
@@ -33,34 +30,17 @@ def calendar_api():
         )
         # 캘린더 API 서비스 객체 생성
         service = build("calendar", "v3", credentials=creds)
-        # calendar_list_dict에 캘린더 목록 전부 가져오기
-        calendar_list_dict={}
-        page_token = None
-        while True:
-            calendar_list = service.calendarList().list(pageToken=page_token).execute()
-            for calendar_list_entry in calendar_list['items']:
-                # 캘린더 정보 아이디로 딕에 저장
-                calendar_list_dict[calendar_list_entry.get('id', '없으면 말이 안되는데...')]=calendar_list_entry
-                st.info(calendar_list_entry)
-            page_token = calendar_list.get('nextPageToken')
-            if not page_token:
-                break
-        calendar_entries = list(calendar_list_dict.values())
-        choice = st.radio(
-            "캘린더 선택",
-            options=calendar_entries,
-            format_func=lambda entry: entry.get("summary", "이름이 없으면 말이 안되는데...")
-        )
+        return service
 
-        #테스트
-        st.info(choice.get("id","제목없음"))
+def calendar_api():
+        service = calendar_service()
         # TIME_MIN년부터 가져오기
         time_min = TIME_MIN
         # TIME_MAX년부터 가져오기
         time_max = TIME_MAX
         # 캘린더에서 대충 최신 이벤트 MAX_RESULTS개 가져오기
         events_result = service.events().list(
-            calendarId=choice.get("id", '없으면 말이 안되는데...'),
+            calendarId= "primary",
             timeMin=time_min,
             timeMax=time_max,
             maxResults=MAX_RESULTS,
@@ -68,8 +48,7 @@ def calendar_api():
             orderBy="startTime"
         ).execute()
         events = events_result.get("items", [])
-        #테스트
-        #st.info(f"calendar_api events : {events}")
+
 
         calendar_events=[]
 
@@ -95,8 +74,33 @@ def calendar_api():
                 event_data["allDay"] = True
 
             calendar_events.append(event_data)
+        #테스트
+        st.info(calendar_events)
         return calendar_events
 
+def session_calendar_id():
+    service = calendar_service()
 
+    calendar_list_dict={}
+    page_token = None
+    while True:
+        calendar_list = service.calendarList().list(pageToken=page_token).execute()
+        for calendar_list_entry in calendar_list['items']:
+            # 캘린더 정보 아이디로 딕에 저장
+            calendar_list_dict[calendar_list_entry.get('id', '없으면 말이 안되는데...')]=calendar_list_entry
+        page_token = calendar_list.get('nextPageToken')
+        if not page_token:
+            break
+    calendar_entries = list(calendar_list_dict.values())
+    # choice에 calendar_entries 넘기기
+    choice=st.selectbox(
+        "캘린더 선택",
+        options=calendar_entries,
+        format_func=lambda entry: entry.get("summary", "이름이 없으면 말이 안되는데...")
+    )
+    
+    calendar_id = choice.get("id", "primary")
+    st.info(f"선택한 캘린더 id: {calendar_id}")
+    st.session_state.calendar_id=calendar_id
 
 

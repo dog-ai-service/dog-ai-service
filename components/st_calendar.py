@@ -23,8 +23,12 @@ def st_calendar():
         "resourceId":"a",
         "allDay": True,
         }]
+
+    # api로 이벤트와 일정 받아오기
+    calendar_api_data=[]
     tasks_api_data=tasks_api()
-    calendar_api_data=calendar_api()
+    if "token" in st.session_state:
+        calendar_api_data=calendar_api()
     if tasks_api_data is not None:
         calendar_events.extend(tasks_api_data)
     if calendar_api_data is not None:
@@ -49,6 +53,6 @@ def st_calendar():
         events=calendar_events,
         options=calendar_options,
         custom_css=custom_css,
-        key='calendar', # Assign a widget key to prevent state loss
-        )
+        key=f'calendar_{st.session_state.get("calendar_id", "default")}'
+    )
 
