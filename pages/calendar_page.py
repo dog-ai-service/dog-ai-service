@@ -1,12 +1,11 @@
 # ui
 import streamlit as st
-from services.calendar_api import session_calendar_id
 # streamlit 캘린더 ui
 from components.st_calendar import st_calendar
 #사이드바 로그인
 from components.sidebar import sidebar
+# 일정 생성 및 일정 요약
+from components.create_schedule import create_schedule
 sidebar()
-# 셀렉트에 따라 캘린더 키 값 받아오기
-if "token" in st.session_state:
-    session_calendar_id()
 st_calendar()
+create_schedule()

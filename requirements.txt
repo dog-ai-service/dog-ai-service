@@ -20,3 +20,5 @@ google-api-python-client
 google-auth
 google-auth-oauthlib
 
+# 번역 라이브러리 
+deep-translator
