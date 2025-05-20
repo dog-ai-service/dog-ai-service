@@ -8,6 +8,8 @@ from services.tasks_api import tasks_api
 from components.st_calendar import st_calendar
 #사이드바 로그인
 from components.sidebar import sidebar
+# 일정 생성 및 일정 요약
+from components.create_schedule import create_schedule
 sidebar()
-st.info({'kind': 'calendar#events', 'etag': '"p337s9gskl6o8q0o"', 'summary': 'mlstudy213@gmail.com', 'description': '', 'updated': '2025-05-19T19:59:41.253Z', 'timeZone': 'Asia/Seoul', 'accessRole': 'owner', 'defaultReminders': [{'method': 'popup', 'minutes': 30}], 'items': []})
 st_calendar()
+create_schedule()
