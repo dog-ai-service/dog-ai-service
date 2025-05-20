@@ -34,19 +34,24 @@ def calendar_api():
         # 캘린더 API 서비스 객체 생성
         service = build("calendar", "v3", credentials=creds)
         # 캘린더 목록 전부 가져오기
+        calendarId_select={}
         page_token = None
         while True:
             calendar_list = service.calendarList().list(pageToken=page_token).execute()
             for calendar_list_entry in calendar_list['items']:
+                calendarId_select[calendar_list_entry['summary']]=calendar_list_entry
                 st.info(calendar_list_entry)
             page_token = calendar_list.get('nextPageToken')
             if not page_token:
                 break
-        # 2020년부터 가져오기
+        
+        #테스트
+        st.info(calendarId_select)
+        # TIME_MIN년부터 가져오기
         time_min = TIME_MIN
-        # 2020년부터 가져오기
+        # TIME_MAX년부터 가져오기
         time_max = TIME_MAX
-        # 캘린더에서 대충 최신 이벤트 50개 가져오기
+        # 캘린더에서 대충 최신 이벤트 MAX_RESULTS개 가져오기
         events_result = service.events().list(
             calendarId="primary",
             timeMin=time_min,
