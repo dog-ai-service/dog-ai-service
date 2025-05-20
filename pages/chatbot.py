@@ -76,6 +76,7 @@ def chatbot():
                 ko = GoogleTranslator(source='en', target='ko').translate(item.strip())
                 translated.append(f"{ko}")
             ko_response = "\n\n".join(translated)
+            print(ko_response)
             ko_response = f"""### 🩺 예측해볼 수 있는 질병들
 {ko_response}
 
