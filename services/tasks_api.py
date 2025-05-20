@@ -6,7 +6,8 @@ from googleapiclient.discovery import build
 import datetime
 # 환경변수
 from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
-
+# 설정값
+from config import TIME_MIN,TIME_MAX,MAX_RESULTS
 
 
 def tasks_api():
@@ -31,13 +32,13 @@ def tasks_api():
         # 구글 테스크 API 서비스 객체 생성
         service = build("tasks", "v1", credentials=creds)
         # 2020년부터 가져오기
-        time_min = "2020-01-01T00:00:00Z"
+        time_min = TIME_MIN
         # 2020년부터 가져오기
-        time_max = "2030-01-01T00:00:00Z"
+        time_max = TIME_MAX
         # 구글 테스크에서 대충 최신 이벤트 50개 가져오기
         tasks_result = service.tasks().list(
             tasklist='@default',
-            maxResults=50,
+            maxResults=MAX_RESULTS,
             showCompleted=True,
             showDeleted=False,
             dueMin=time_min,

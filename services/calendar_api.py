@@ -6,6 +6,9 @@ from googleapiclient.discovery import build
 import datetime
 # 환경변수
 from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+# 설정값
+from config import TIME_MIN,TIME_MAX,MAX_RESULTS
+
 
 
 
@@ -31,15 +34,15 @@ def calendar_api():
         # 캘린더 API 서비스 객체 생성
         service = build("calendar", "v3", credentials=creds)
         # 2020년부터 가져오기
-        time_min = "2020-01-01T00:00:00Z"
+        time_min = TIME_MIN
         # 2020년부터 가져오기
-        time_max = "2030-01-01T00:00:00Z"
+        time_max = TIME_MAX
         # 캘린더에서 대충 최신 이벤트 50개 가져오기
         events_result = service.events().list(
             calendarId="primary",
             timeMin=time_min,
             timeMax=time_max,
-            maxResults=50,
+            maxResults=MAX_RESULTS,
             singleEvents=True,
             orderBy="startTime"
         ).execute()
