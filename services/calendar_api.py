@@ -48,6 +48,8 @@ def calendar_api():
             singleEvents=True,
             orderBy="startTime"
         ).execute()
+        #테스트
+        st.info(f"calendar_api events_result : {events_result}")
         events = events_result.get("items", [])
         #테스트
         st.info(f"calendar_api events : {events}")
