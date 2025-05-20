@@ -183,4 +183,3 @@ def dog_info_page():
         st.markdown("---")
     render_add_button()
     render_add_form()
-    print(st.session_state.dogs)
