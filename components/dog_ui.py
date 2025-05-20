@@ -2,20 +2,13 @@
     - 강아지 데이터
         st.session_state.dogs = [
             {   
-                # 입력받는 데이터 필드
-                "name":   "이름",
-                "breed":  "견종",
-                "gender": "성별",
-                "birth":  "생년월일",
-                "weight": "무게",
-                "note":   "특이사항",
-                "de_sex": "중성화 여부", 
-                # 계산되야 하는 데이터 필드
-                "feed_period": "사료 주기", "feed_time": "사료 시각",
-                "walk_period": "산책 주기", "walk_time": "산책 시각",
-                "vaccination_period": "예방접종 주기", "vaccination_time": "예방접종 시각",
-                "bath_period": "목욕 주기", "bath_time": "목욕 시각",
-                "anthelmintic_period": "구충제 주기", "anthelmintic_time": "구충제 시각"
+                "name":   "이름", # 문자열
+                "breed":  "견종", # 문자열
+                "gender": "성별", # 수컷/암컷, 문자열
+                "birth":  "생년월일", # datetime.date(year, month, day)
+                "weight": "무게", # kg단위, float
+                "note":   "특이사항", # 문자열
+                "de_sex": "중성화 여부", # O/X, 문자열
             }, 
             { ... }
         ]
@@ -160,11 +153,6 @@ def render_add_form():
                         "de_sex": st.session_state.new_de_sex,
                         "weight": round(st.session_state.new_weight,1),
                         "note":   st.session_state.new_note,
-                        "feed_period": "", "feed_time": "",
-                        "walk_period": "", "walk_time": "",
-                        "vaccination_period": "", "vaccination_time": "",
-                        "bath_period": "", "bath_time": "",
-                        "anthelmintic_period": "", "anthelmintic_time": "",
                     })
                     st.session_state.adding = False
                     # cleanup
