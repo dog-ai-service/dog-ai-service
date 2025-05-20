@@ -25,8 +25,6 @@ def st_calendar():
         }]
     tasks_api_data=tasks_api()
     calendar_api_data=calendar_api()
-    #테스트
-    st.info(f" st_calendar calendar_api_data : {calendar_api_data}")
     if tasks_api_data is not None:
         calendar_events.extend(tasks_api_data)
     if calendar_api_data is not None:
@@ -46,8 +44,6 @@ def st_calendar():
             font-size: 2rem;
         }
     """
-    #테스트 출력
-    #st.write(calendar_events)
 
     calendar = cld(
         events=calendar_events,

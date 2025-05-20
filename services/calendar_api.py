@@ -19,9 +19,6 @@ def calendar_api():
         pass
     else:
         token = st.session_state.token
-        #테스트
-        st.info(f" calendar_api token : {token}")
-
         # 캘린더에 사용을 위한 구글계정 정보를 세션에서 가져오기
         creds = Credentials(
             token=token["token"]["access_token"],
@@ -31,8 +28,6 @@ def calendar_api():
             client_secret=client_secret,
             scopes=["https://www.googleapis.com/auth/calendar"]
         )
-        #테스트
-        st.info(f"calendar_api creds : {creds}")
         # 캘린더 API 서비스 객체 생성
         service = build("calendar", "v3", credentials=creds)
         # 2020년부터 가져오기
