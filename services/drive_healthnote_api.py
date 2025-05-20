@@ -37,7 +37,6 @@ def get_folder_id():
         return create_folder()
 
 
-
 def get_sheet_id():
     creds = make_creds("drive")
     if not creds:
@@ -148,7 +147,11 @@ def sheet_write(spreadsheet_id, health_info):
     header = ["날짜", "주요 증상", "의심 질병", "필요한 조치", "추가 메모"]
 
     # 나머지 행: 실제 데이터
-    values = [header]
+    sheet_value = sheet_service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range="시트1!A1").execute()
+    values = []
+    if 'values' not in sheet_value.keys():
+        values = [header]
+    
     for info in health_info:
         row = [info.get(col, "공백") for col in header]
         values.append(row)
@@ -158,10 +161,11 @@ def sheet_write(spreadsheet_id, health_info):
     }
 
     try:
-        response = sheet_service.spreadsheets().values().update(
+        response = sheet_service.spreadsheets().values().append(
             spreadsheetId=spreadsheet_id,
-            range="시트1!A1",  # A1부터 시작, 한국인 계정이면 시트명 디폴트가 시트1이라 그런지 sheet1이 아닌 시트1로해야함
+            range="시트1!A1",  
             valueInputOption="RAW",
+            insertDataOption="INSERT_ROWS",  
             body=body
         ).execute()
     except Exception as e:
