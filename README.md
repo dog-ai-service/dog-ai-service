@@ -57,8 +57,10 @@ dog_ai_service/
 ├── components/                   : Streamlit UI 컴포넌트
 │   ├── prompt_box.py             : 질문 입력창 컴포넌트 (**삭제 예정**)
 │   ├── sidebar.py                : 사이드바 UI 컴포넌트
-│   └── st_calendar.py            : Streamlit용 캘린더 출력 컴포넌트
-│
+│   ├── st_calendar.py            : Streamlit용 캘린더 출력 컴포넌트
+|   ├── create_schedulr.py        : 일정 생성 / 일정 요약 출력 컴포넌트트
+|   └── symptom_chatbot.py        : 증상 전문 챗봇 컴포넌트
+│    
 ├── pages/                        : Streamlit 내비게이션 페이지들
 │   ├── calendar_page.py          : 캘린더 페이지
 │   ├── chatbot.py                : 챗봇 페이지
