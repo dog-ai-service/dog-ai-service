@@ -9,6 +9,7 @@ from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 # 설정값
 from config import TIME_MIN,TIME_MAX,MAX_RESULTS
 
+# 구글 캘린더 서비스
 def calendar_service():
     client_id=GOOGLE_CLIENT_ID
     client_secret=GOOGLE_CLIENT_SECRET
@@ -33,7 +34,8 @@ def calendar_service():
     
     return service
 
-def calendar_api():
+# calendar_id의 캘린더 이벤트를 리스트(딕셔너리) 형태로 반환
+def get_calendar_events(calendar_id):
     service=calendar_service()
     # 미로그인 시 값없음
     if service is None:
@@ -45,7 +47,7 @@ def calendar_api():
     time_max = TIME_MAX
     # 캘린더에서 대충 최신 이벤트 50개 가져오기
     events_result = service.events().list(
-        calendarId="primary" if "selected_calendar" not in st.session_state else st.session_state.selected_calendar,
+        calendarId=calendar_id,
         timeMin=time_min,
         timeMax=time_max,
         maxResults=MAX_RESULTS,
@@ -80,10 +82,11 @@ def calendar_api():
         calendar_events.append(event_data)
     return calendar_events
 
-
-def get_calendar_id():
+# 세션.selected_calendar에 모든 캘린더 목록의 정보 저장 딕(id, summary)
+def session_set_calendar_list():
     service=calendar_service()
     if service is None:
+        print("로그인 안됨")
         return 
     calendar_list={}
     # 캘린더 목록 전부 가져오기
@@ -91,17 +94,12 @@ def get_calendar_id():
     while True:
         calendar_list_origin = service.calendarList().list(pageToken=page_token).execute()
         for calendar_list_entry in calendar_list_origin['items']:
-            calendar_list[calendar_list_entry["id"]]=calendar_list_entry # 캘린더 리스트에 추가
-            st.info(calendar_list_entry)
+            # 캘린더 목록을 딕셔너리에 (id, summary)로 추가
+            calendar_list[calendar_list_entry["id"]]=calendar_list_entry['summary'] 
         page_token = calendar_list_origin.get('nextPageToken')
         if not page_token:
             break
-    selected_calendar=st.selectbox(
-        "캘린더 :",
-        calendar_list.keys(),
-        format_func=lambda x:calendar_list[x]["summary"]
-    )
-    st.session_state.selected_calendar = selected_calendar
+    st.session_state.calendar_list = calendar_list
 
 
     

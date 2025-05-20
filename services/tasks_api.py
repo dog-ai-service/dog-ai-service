@@ -16,8 +16,9 @@ def tasks_api():
 
     # 세션 상태에 token이 없으면 로그인 버튼 표시
     # 사용할 계정의 Google Calendar API를 사용 상태로 바꾸어야 사용가능
+    # 미로그인 시 값없음
     if "token" not in st.session_state:
-        pass
+        return []
     else:
         token = st.session_state.token
         # 테스크에 사용을 위한 구글계정 정보를 세션에서 가져오기
