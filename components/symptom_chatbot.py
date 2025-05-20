@@ -5,6 +5,8 @@ from llama_index.core import StorageContext, load_index_from_storage
 # 번역 라이브러리
 from deep_translator import GoogleTranslator
 import re
+from components.make_health_note import make_health_note
+from services.drive_healthnote_api import *
 
 
 
@@ -19,13 +21,18 @@ def symptom_chatbot():
     # 사용자 입력
     prompt = st.chat_input('강아지의 증상을 자세히 입력할수록 더 정확한 답변을 받을 수 있어요.')
     if prompt:
-        st.session_state.symptom_prompt = prompt
-        # 사용자 입력 출력 및 히스토리에 추가
+        # 강아지 증상 정보를 가져오는 코드
+        try:
+            health_info = make_health_note(prompt)
+        except:
+            health_info = {'날짜': '', '주요 증상': '', '의심 질병': '', '필요한 조치': '', '추가 메모': ''}
+
+
+
         with st.chat_message('user'):
             st.markdown(prompt)
             history.add_user_message(prompt)
 
-        
         # 질의 가공
         # 1. prompt 영어로 번역
         translated_prompt = GoogleTranslator(source="auto", target="en").translate(prompt)
@@ -55,7 +62,11 @@ def symptom_chatbot():
             ko_response = "\n\n".join(translated)
             # 이름 뽑아오기 성공 -> health_note의 인자로 넘겨야함.
             names = re.findall(r"\d+\.\s*([^:]+?)\s*:", ko_response, flags=re.DOTALL)
-            print(names)
+            health_info['의심 질병'] = ", ".join(names)
+            try:
+                sheet_write(sheet_create(), [health_info])
+            except:
+                pass
             ko_response = f"""### 🩺 예측해볼 수 있는 질병들
 {ko_response}
 

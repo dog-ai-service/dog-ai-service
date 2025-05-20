@@ -9,9 +9,6 @@ from components.sidebar import sidebar
 
 
 st.title("💬 강아지 증상 전문 챗봇")
-sidebar()
-
-
 
 
 # 토글버튼을 통해 증상 챗봇 활성화/비활성화 -> 활성화면 증상 전문 챗봇 , 활성화되지 않으면 일상 챗봇 
