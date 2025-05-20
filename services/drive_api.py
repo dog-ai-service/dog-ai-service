@@ -33,7 +33,7 @@ def create_folder():
         st.success(f"✅ 폴더 '{folder_name}' 생성 완료")
         return folder.get('id')
 
-# 시트 생성하고 시트의 id값 반환
+# 시트 생성하고 시트의 id값 반환 / 실패시 None 반환
 def sheet_create():
     creds = make_creds("drive")
     if not creds:
