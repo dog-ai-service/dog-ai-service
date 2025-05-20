@@ -58,37 +58,50 @@ services\AI와 pages/chatbot.py pages/health_note.py가 연동되어있음을 �
 dog_ai_service/
 ├── app.py                        : 메인 기능 실행 파일
 ├── .env                          : 환경변수 파일 (Git 예외처리됨, **파일명 절대 변경 금지**)
+├── config.py                     : 전역 설정을 정의한 설정 파일
 ├── env_config.py                 : 환경변수 로드 모듈
 ├── requirements.txt              : 패키지 설치 파일
-├── test.py                       : 테스트용 파일
 ├── .gitignore                    : Git 예외 설정
+├── README.md                     : 프로젝트 설명 문서
 │
 ├── other_files/                  : 기타 파일 (예: PDF 등)
 │   └── 반려견_AI_비서_기획안_최종.pdf
 │
 ├── components/                   : Streamlit UI 컴포넌트
+│   ├── create_schedule.py        : 일정 생성 / 일정 요약 출력 컴포넌트
 │   ├── prompt_box.py             : 질문 입력창 컴포넌트 (**삭제 예정**)
 │   ├── sidebar.py                : 사이드바 UI 컴포넌트
 │   ├── st_calendar.py            : Streamlit용 캘린더 출력 컴포넌트
-|   ├── create_schedulr.py        : 일정 생성 / 일정 요약 출력 컴포넌트트
-|   └── symptom_chatbot.py        : 증상 전문 챗봇 컴포넌트
-│    
+│   └── symptom_chatbot.py        : 증상 전문 챗봇 컴포넌트
+│
 ├── pages/                        : Streamlit 내비게이션 페이지들
 │   ├── calendar_page.py          : 캘린더 페이지
 │   ├── chatbot.py                : 챗봇 페이지
-│   └── health_note.py            : 건강 노트 페이지
+│   ├── health_note.py            : 건강 노트 페이지
+│   └── test.py                   : 테스트용 파일
 │
-└── services/                     : 서비스 API 모듈
-    ├── tasks_api.py              : 구글 Tasks API 처리
-    ├── calendar_api.py           : 캘린더 API 처리
-    ├── login_api.py              : 로그인 처리 API
-    ├── drive_api.py              : 구글 드라이브(시트) API
-    ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈 (필요 없을 지도?)
-    └── AI/                       : AI 관련 기능 모듈
-        ├── extract_event_info.py : 자연어(사용자 프롬프트)를 json으로 변환하는 모듈
-        └── summation.py          : 당일 이벤트를 입력으로 받고, 요약하는 모듈
-
-
+├── agents/                       : LangChain Agent 초기화 관련 모듈
+│   └── init_agent.py             : LLM Agent 초기화 및 구성 설정
+│
+├── services/                     : 서비스 API 모듈
+│   ├── tasks_api.py              : 구글 Tasks API 처리
+│   ├── calendar_api.py           : 캘린더 API 처리
+│   ├── login_api.py              : 로그인 처리 API
+│   ├── drive_api.py              : 구글 드라이브(시트) API
+│   ├── drive_healthnote_api.py   : (작성 필요) 예상) 건강 노트 관련 시트 연동 API
+│   ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈 (필요 없을 지도?)
+│   ├── make_creds_api.py         : (작성 필요) 예상) 구글 API credentials 생성 모듈
+│   └── AI/                       : AI 관련 기능 모듈
+│       ├── extract_event_info.py : 자연어(사용자 프롬프트)를 json으로 변환하는 모듈
+│       ├── make_health_note.py   : (작성 필요) 예상) 건강 노트를 자동 생성하는 모듈
+│       └── summation.py          : 당일 이벤트를 입력으로 받고, 요약하는 모듈
+│
+└── index_db_backup/              : (작성 필요) 예상) 벡터 인덱스 및 문서 저장소 백업 데이터
+    ├── default__vector_store.json
+    ├── docstore.json
+    ├── graph_store.json
+    ├── image__vector_store.json
+    └── index_store.json
 ```
 
 ---
