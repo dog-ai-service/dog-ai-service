@@ -23,11 +23,17 @@
 ```
 역할 : 깃허브 관리, 로그인, 백엔드, LLM과 캘린더 연동(부), 구글 드라이브 연동(주)
 
-MCP 를 이용한 자동화 시스템
-create_schedule와 pages/calendar_page.py를 합쳐야함
-calendar_page의 문제 해결
-구글 캘린더 리마인더 추가하기
+1. 구글 드라이브 연결하기
+3. 구글 캘린더 리마인더 추가하기
+4. create_schedule와 pages/calendar_page.py를 합쳐야함
+5. 규상씨 pc에서는 캘린더 불러오기가 제대로 되지않음
+10. MCP 를 이용한 자동화 시스템
+
+
 services\AI와 pages/chatbot.py pages/health_note.py가 연동되어있음을 기억하셈
+
+
+
 ```
 
 ---
@@ -60,6 +66,7 @@ dog_ai_service/
     ├── tasks_api.py              : 구글 Tasks API 처리
     ├── calendar_api.py           : 캘린더 API 처리
     ├── login_api.py              : 로그인 처리 API
+    ├── drive_api.py              : 구글 드라이브(시트) API
     ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈
     └── AI/                       : AI 관련 기능 모듈
         ├── extract_event_info.py : 자연어(사용자 프롬프트)를 json으로 변환하는 모듈
@@ -128,8 +135,7 @@ dog_ai_service/
 > 아래 코드를 입력하여 각 branch가 제대로 추가되었는지 확인  
 >> git branch -r
 >
-> 특정 커밋의 수정사항 취소하고 새로 커밋
->> git revert <되돌리고 싶은 커밋 id>
+
 
 ---
 
@@ -150,8 +156,10 @@ dog_ai_service/
 > branch 병합하기(현재 branch를 대상으로 명령어의 branch를 덮어씌우는 느낌)
 >> git merge [branch명]
 >
-> 특정 커밋의 수정사항 취소하고 새로 커밋하고 esc한 후에 :q 엔터
->> git revert <되돌리고 싶은 커밋 id>
+> 해당 커밋의 수정사항'만' 취소하고 새로 커밋하는 명령어
+>> git revert <되돌리고 싶은 커밋 id>  
+>> ```코드 입력 시 터미널에 이상한 코드가(vi이라고 .txt랑 비슷한 느낌)가 나오면 esc > :q 입력 > 엔터 누르고 깃헙에 푸쉬하면 적용완료```
+
 
 ---
 

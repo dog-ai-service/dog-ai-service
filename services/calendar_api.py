@@ -1,6 +1,6 @@
 # ui
 import streamlit as st
-# 구글 캘린더 사용을 위한 패키지
+# 구글 권한 사용을 위한 패키지
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import datetime
