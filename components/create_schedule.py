@@ -11,29 +11,14 @@ from services.AI.extract_event_info import extract_event_info
 from services.AI.summation import summation
 import pytz
 from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+from services.make_creds_api import make_creds
 
 load_dotenv()
 
-SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 def create_event(start_time, end_time, summary):
-    client_id=GOOGLE_CLIENT_ID
-    client_secret=GOOGLE_CLIENT_SECRET
-    # 세션 상태에 token이 없으면 로그인 버튼 표시
-    # 사용할 계정의 Google Calendar API를 사용 상태로 바꾸어야 사용가능
-    if "token" not in st.session_state:
-        pass
-    else:
-        token = st.session_state.token
-        # 캘린더에 사용을 위한 구글계정 정보를 세션에서 가져오기
-        creds = Credentials(
-            token=token["token"]["access_token"],
-            refresh_token=token.get("refresh_token"),
-            token_uri="https://oauth2.googleapis.com/token",
-            client_id=client_id,
-            client_secret=client_secret,
-            scopes=SCOPES
-        )
+    creds = make_creds("calendar")
+    if creds:
         # 캘린더 API 서비스 객체 생성
         service = build("calendar", "v3", credentials=creds)
         event = {
@@ -51,23 +36,8 @@ def create_event(start_time, end_time, summary):
         st.success(f'✅ 일정 생성 완료: [{summary}]({event.get("htmlLink")})')
 
 def summation_events():
-    client_id=GOOGLE_CLIENT_ID
-    client_secret=GOOGLE_CLIENT_SECRET
-    # 세션 상태에 token이 없으면 로그인 버튼 표시
-    # 사용할 계정의 Google Calendar API를 사용 상태로 바꾸어야 사용가능
-    if "token" not in st.session_state:
-        pass
-    else:
-        token = st.session_state.token
-        # 캘린더에 사용을 위한 구글계정 정보를 세션에서 가져오기
-        creds = Credentials(
-            token=token["token"]["access_token"],
-            refresh_token=token.get("refresh_token"),
-            token_uri="https://oauth2.googleapis.com/token",
-            client_id=client_id,
-            client_secret=client_secret,
-            scopes=SCOPES
-        )
+    creds = make_creds("calendar")
+    if creds:
         # 캘린더 API 서비스 객체 생성
         service = build("calendar", "v3", credentials=creds)
     

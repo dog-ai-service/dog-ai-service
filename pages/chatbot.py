@@ -5,7 +5,6 @@ from components.symptom_chatbot import symptom_chatbot
 
 import streamlit as st
 #사이드바 로그인
-from components.sidebar import sidebar
 
 
 st.title("💬 강아지 증상 전문 챗봇")

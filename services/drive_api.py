@@ -6,35 +6,14 @@ from googleapiclient.discovery import build
 import datetime
 # 환경변수
 from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+from services.make_creds_api import make_creds
 
 
 
-def drive_creds():
-    client_id=GOOGLE_CLIENT_ID
-    client_secret=GOOGLE_CLIENT_SECRET
-
-    # 세션 상태에 token이 없으면 로그인 버튼 표시
-    # 사용할 계정의 Google Calendar API를 사용 상태로 바꾸어야 사용가능
-    if "token" not in st.session_state:
-        pass
-    else:
-        token = st.session_state.token
-        # 드라이브(스프레드시트) 사용을 위한 구글계정 정보를 세션에서 가져오기
-        creds = Credentials(
-            token=token["token"]["access_token"],
-            refresh_token=token.get("refresh_token"),
-            token_uri="https://oauth2.googleapis.com/token",
-            client_id=client_id,
-            client_secret=client_secret,
-            scopes=["https://www.googleapis.com/auth/drive"]
-        )
-
-
-        return creds
 
 # 저장용 폴더 만들고 폴거의 id값 반환
 def create_folder():
-    service = build("drive", "v3", credentials=drive_creds())
+    service = build("drive", "v3", credentials=make_creds("drive"))
     folder_name='dog_ai_service'
 
     # 이미 존재하는 폴더가 있는지 확인
@@ -56,7 +35,7 @@ def create_folder():
 
 # 시트 생성하고 시트의 id값 반환
 def sheet_create():
-    creds = drive_creds()
+    creds = make_creds("drive")
     if not creds:
         st.error("❌ 먼저 로그인하세요")
         return
@@ -109,7 +88,7 @@ def sheet_create():
 
 # id값으로시트 정보 가져오기
 def sheet_read(spreadsheet_id):
-    creds = drive_creds()
+    creds = make_creds("drive")
     if not creds:
         st.error("❌ 인증되지 않았습니다. 로그인 후 다시 시도하세요.")
         return
@@ -155,7 +134,7 @@ def json_key_change(values):
 
 # id값으로 시트에 정보 넣기
 def sheet_write(spreadsheet_id, dogs):
-    creds = drive_creds()
+    creds = make_creds("drive")
     if not creds:
         st.error("❌ 인증되지 않았습니다. 로그인 후 다시 시도하세요.")
         return

@@ -21,6 +21,9 @@
 --> 내 캘린더 안되던 원인 
 : 병재님 코드에서 이벤트 가져오는 방식을 보면 CalendarID를 primary로 가져오게 되어있음 --> 즉, 계정 생성시 생기는 고유한 캘린더인듯
 
+- 우선 사용자가 증상을 입력하게 되면 자동으로 구글 스프레드 시트에 기입되도록 함.
+- 또한, 증상 노트 페이지에서 자동으로 뜨도록 설정함.
+
 ```
 ### 오병재
 ```
@@ -71,7 +74,7 @@ dog_ai_service/
     ├── calendar_api.py           : 캘린더 API 처리
     ├── login_api.py              : 로그인 처리 API
     ├── drive_api.py              : 구글 드라이브(시트) API
-    ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈
+    ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈 (필요 없을 지도?)
     └── AI/                       : AI 관련 기능 모듈
         ├── extract_event_info.py : 자연어(사용자 프롬프트)를 json으로 변환하는 모듈
         └── summation.py          : 당일 이벤트를 입력으로 받고, 요약하는 모듈

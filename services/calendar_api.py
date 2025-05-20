@@ -6,28 +6,13 @@ from googleapiclient.discovery import build
 import datetime
 # 환경변수
 from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+from services.make_creds_api import make_creds
 
 
 
 def calendar_api():
-    client_id=GOOGLE_CLIENT_ID
-    client_secret=GOOGLE_CLIENT_SECRET
-
-    # 세션 상태에 token이 없으면 로그인 버튼 표시
-    # 사용할 계정의 Google Calendar API를 사용 상태로 바꾸어야 사용가능
-    if "token" not in st.session_state:
-        pass
-    else:
-        token = st.session_state.token
-        # 캘린더에 사용을 위한 구글계정 정보를 세션에서 가져오기
-        creds = Credentials(
-            token=token["token"]["access_token"],
-            refresh_token=token.get("refresh_token"),
-            token_uri="https://oauth2.googleapis.com/token",
-            client_id=client_id,
-            client_secret=client_secret,
-            scopes=["https://www.googleapis.com/auth/calendar"]
-        )
+    creds = make_creds("calendar")
+    if creds:
         # 캘린더 API 서비스 객체 생성
         service = build("calendar", "v3", credentials=creds)
         # 2020년부터 가져오기
