@@ -33,6 +33,6 @@ if "token" in st.session_state:
 
     # 각 캘린더 출력
     for calendar_entry in calendar_list.get("items", []):
-        st.info(f"캘린더 이름:{calendar_entry.get("summary","없음")}")
+        st.info(f"캘린더 이름:{calendar_entry.get("summary","없음")}\n")
         st.info(f"캘린더 ID: {calendar_entry.get("id","없음")}")
         st.info(f"소유권:{calendar_entry.get("accessRole","없음")}")
