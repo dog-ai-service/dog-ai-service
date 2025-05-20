@@ -8,7 +8,6 @@ import openai
 
 load_dotenv()
 
-SCOPES = ['https://www.googleapis.com/auth/calendar']
 client = openai.OpenAI(api_key=os.environ['OPENAI_API_KEY'])
 
 

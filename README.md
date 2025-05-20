@@ -18,16 +18,27 @@
 ```
 역할 : 강아지 증상 데이터를 벡터 DB에 저장하고, 이를 기반으로 질문에 답하는 전문 챗봇 설계, LLM과 캘린더 연동(주)
 
+--> 내 캘린더 안되던 원인 
+: 병재님 코드에서 이벤트 가져오는 방식을 보면 CalendarID를 primary로 가져오게 되어있음 --> 즉, 계정 생성시 생기는 고유한 캘린더인듯
+
+- 우선 사용자가 증상을 입력하게 되면 자동으로 구글 스프레드 시트에 기입되도록 함.
+- 또한, 증상 노트 페이지에서 자동으로 뜨도록 설정함.
+
 ```
 ### 오병재
 ```
 역할 : 깃허브 관리, 로그인, 백엔드, LLM과 캘린더 연동(부), 구글 드라이브 연동(주)
 
-MCP 를 이용한 자동화 시스템
-create_schedule와 pages/calendar_page.py를 합쳐야함
-calendar_page의 문제 해결
-구글 캘린더 리마인더 추가하기
+2. 구글 캘린더 여러개인 경우도 해결하셈
+3. 구글 캘린더 리마인더 추가하기
+4. create_schedule와 pages/calendar_page.py를 합쳐야함
+10. MCP 를 이용한 자동화 시스템
+
+
 services\AI와 pages/chatbot.py pages/health_note.py가 연동되어있음을 기억하셈
+
+
+
 ```
 
 ---
@@ -49,8 +60,10 @@ dog_ai_service/
 ├── components/                   : Streamlit UI 컴포넌트
 │   ├── prompt_box.py             : 질문 입력창 컴포넌트 (**삭제 예정**)
 │   ├── sidebar.py                : 사이드바 UI 컴포넌트
-│   └── st_calendar.py            : Streamlit용 캘린더 출력 컴포넌트
-│
+│   ├── st_calendar.py            : Streamlit용 캘린더 출력 컴포넌트
+|   ├── create_schedulr.py        : 일정 생성 / 일정 요약 출력 컴포넌트트
+|   └── symptom_chatbot.py        : 증상 전문 챗봇 컴포넌트
+│    
 ├── pages/                        : Streamlit 내비게이션 페이지들
 │   ├── calendar_page.py          : 캘린더 페이지
 │   ├── chatbot.py                : 챗봇 페이지
@@ -60,7 +73,8 @@ dog_ai_service/
     ├── tasks_api.py              : 구글 Tasks API 처리
     ├── calendar_api.py           : 캘린더 API 처리
     ├── login_api.py              : 로그인 처리 API
-    ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈
+    ├── drive_api.py              : 구글 드라이브(시트) API
+    ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈 (필요 없을 지도?)
     └── AI/                       : AI 관련 기능 모듈
         ├── extract_event_info.py : 자연어(사용자 프롬프트)를 json으로 변환하는 모듈
         └── summation.py          : 당일 이벤트를 입력으로 받고, 요약하는 모듈
@@ -73,6 +87,21 @@ dog_ai_service/
 ## 서버 실행/점검 커멘드
 > streamlit run app.py --server.port 8080  
 > streamlit hello
+
+---
+
+## Git 커밋명 규칙
+```
+- **Feat : 신규 기능 추가**
+- **Fix : 버그 수정 **
+- Build : 빌드 관련 파일 수정
+- Chore : 기타 수정
+- Ci : 지속적 개발에 따른 수정
+- Docs : 문서 수정
+- Style : 코드 스타일, 포멧형식 관련
+- Refactor : 리팩토링
+- Test : 테스트 코드 수정
+```
 
 ---
 
@@ -128,8 +157,7 @@ dog_ai_service/
 > 아래 코드를 입력하여 각 branch가 제대로 추가되었는지 확인  
 >> git branch -r
 >
-> 특정 커밋의 수정사항 취소하고 새로 커밋
->> git revert <되돌리고 싶은 커밋 id>
+
 
 ---
 
@@ -150,8 +178,10 @@ dog_ai_service/
 > branch 병합하기(현재 branch를 대상으로 명령어의 branch를 덮어씌우는 느낌)
 >> git merge [branch명]
 >
-> 특정 커밋의 수정사항 취소하고 새로 커밋하고 esc한 후에 :q 엔터
->> git revert <되돌리고 싶은 커밋 id>
+> 해당 커밋의 수정사항'만' 취소하고 새로 커밋하는 명령어
+>> git revert <되돌리고 싶은 커밋 id>  
+>> ```코드 입력 시 터미널에 이상한 코드가(vi이라고 .txt랑 비슷한 느낌)가 나오면 esc > :q 입력 > 엔터 누르고 깃헙에 푸쉬하면 적용완료```
+
 
 ---
 

@@ -11,10 +11,6 @@ from langchain_community.callbacks import StreamlitCallbackHandler
 
 load_dotenv()
 
-SCOPES = ['https://www.googleapis.com/auth/calendar']
-client = openai.OpenAI(api_key=os.environ['OPENAI_API_KEY'])
-
-
 
 def summation(user_input):
     prompt = f"""

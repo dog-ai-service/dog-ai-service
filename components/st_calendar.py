@@ -44,8 +44,6 @@ def st_calendar():
             font-size: 2rem;
         }
     """
-    #테스트 출력
-    #st.write(calendar_events)
 
     calendar = cld(
         events=calendar_events,
