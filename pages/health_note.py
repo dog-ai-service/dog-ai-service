@@ -7,7 +7,7 @@ from services.drive_healthnote_api import *
 st.title("🐶 강아지 헬스 노트 자동 작성기")
 
 # sheet에 있는 정보 불러오기
-sheet_read(sheet_create())
+sheet_read(get_sheet_id())
 
 
 

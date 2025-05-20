@@ -13,25 +13,16 @@ from services.make_creds_api import make_creds
 # 저장용 폴더 만들고 폴거의 id값 반환
 def create_folder():
     service = build("drive", "v3", credentials=make_creds("drive"))
-    folder_name='dog_health_service'
-
-    # 이미 존재하는 폴더가 있는지 확인
-    query = f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.spreadsheet' and trashed = false"
-    response = service.files().list(q=query, fields="files(id, name)").execute()
-    files = response.get('files', [])
-
-    if files:
-        return files[0]['id']
-    else:
-        file_metadata = {
+    folder_name = 'dog_health_service'
+    file_metadata = {
             'name': folder_name,
             'mimeType': 'application/vnd.google-apps.folder'
-        }
-        folder = service.files().create(body=file_metadata, fields='id').execute()
-        return folder.get('id')
+    }
+    folder = service.files().create(body=file_metadata, fields='id').execute()
+    return folder.get('id')
     
-
-def create_folder():
+# 폴더의 id값 반환 -> 만약, 폴더가 없으면 만들고 id값 반환
+def get_folder_id():
     service = build("drive", "v3", credentials=make_creds("drive"))
     folder_name='dog_health_service'
 
@@ -43,23 +34,17 @@ def create_folder():
     if files:
         return files[0]['id']
     else:
-        file_metadata = {
-            'name': folder_name,
-            'mimeType': 'application/vnd.google-apps.folder'
-        }
-        folder = service.files().create(body=file_metadata, fields='id').execute()
-        return folder.get('id')
+        return create_folder()
 
 
-# 시트 생성하고 시트의 id값 반환
-def sheet_create():
+
+def get_sheet_id():
     creds = make_creds("drive")
     if not creds:
         st.error("❌ 먼저 로그인하세요")
         return
     title="건강노트 정보"
 
-    sheet_service = build("sheets", "v4", credentials=creds)
     drive_service = build("drive", "v3", credentials=creds)
 
     # 이미 존재하는 폴더가 있는지 확인
@@ -71,19 +56,26 @@ def sheet_create():
         spreadsheet_id=files[0]['id']
         return spreadsheet_id
     else:
-        # 시트 만들기
-        spreadsheet = {'properties': {'title': title}}
-        try:
-            sheet = sheet_service.spreadsheets().create(body=spreadsheet).execute()
-            spreadsheet_id = sheet['spreadsheetId']
-        except Exception as e:
-            st.error(f"오류 : {e}")
-            return
-#
+        return create_sheet()
 
+# 시트 생성하고 시트의 id값 반환
+def create_sheet():
+    title="건강노트 정보"
+    creds = make_creds("drive")
+    sheet_service = build("sheets", "v4", credentials=creds)
+    drive_service = build("drive", "v3", credentials=creds)
+    # 시트 만들기
+    spreadsheet = {'properties': {'title': title}}
+    try:
+        sheet = sheet_service.spreadsheets().create(body=spreadsheet).execute()
+        spreadsheet_id = sheet['spreadsheetId']
+    except Exception as e:
+        st.error(f"오류 : {e}")
+        return
+#
     # 시트를 이동
     try:
-        folder_id = create_folder()
+        folder_id = get_folder_id()
 
         file = drive_service.files().get(fileId=spreadsheet_id, fields='parents').execute()
         previous_parents = ",".join(file.get('parents', []))
@@ -110,7 +102,6 @@ def sheet_read(spreadsheet_id):
     sheet_service = build("sheets", "v4", credentials=creds)
 
     try:
-        sheet_service = build("sheets", "v4", credentials=creds)
         response = sheet_service.spreadsheets().values().get(
             spreadsheetId=spreadsheet_id,
             range="시트1!A1:Z100"#H100이여도 컬럼엔 문제없지만 일단 넉넉하게 잡기
@@ -145,7 +136,7 @@ def json_key_change(values):
 
 
 # id값으로 시트에 정보 넣기
-def sheet_write(spreadsheet_id, dogs):
+def sheet_write(spreadsheet_id, health_info):
     creds = make_creds("drive")
     if not creds:
         st.error("❌ 인증되지 않았습니다. 로그인 후 다시 시도하세요.")
@@ -158,8 +149,8 @@ def sheet_write(spreadsheet_id, dogs):
 
     # 나머지 행: 실제 데이터
     values = [header]
-    for dog in dogs:
-        row = [dog.get(col, "공백") for col in header]
+    for info in health_info:
+        row = [info.get(col, "공백") for col in header]
         values.append(row)
 
     body = {
