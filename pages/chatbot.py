@@ -76,7 +76,9 @@ def chatbot():
                 ko = GoogleTranslator(source='en', target='ko').translate(item.strip())
                 translated.append(f"{ko}")
             ko_response = "\n\n".join(translated)
-            print(ko_response)
+            # 이름 뽑아오기 성공 -> health_note의 인자로 넘겨야함.
+            names = re.findall(r"\d+\.\s*([^:]+?)\s*:", ko_response, flags=re.DOTALL)
+            print(names)
             ko_response = f"""### 🩺 예측해볼 수 있는 질병들
 {ko_response}
 
