@@ -1,6 +1,6 @@
 # ui
 import streamlit as st
-# 구글 캘린더 사용을 위한 패키지
+# 구글 권한 사용을 위한 패키지
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import datetime
@@ -16,10 +16,10 @@ def tasks_api():
     # 세션 상태에 token이 없으면 로그인 버튼 표시
     # 사용할 계정의 Google Calendar API를 사용 상태로 바꾸어야 사용가능
     if "token" not in st.session_state:
-        st.title("로그인 안됨")
+        pass
     else:
         token = st.session_state.token
-        # 캘린더에 사용을 위한 구글계정 정보를 세션에서 가져오기
+        # 테스크에 사용을 위한 구글계정 정보를 세션에서 가져오기
         creds = Credentials(
             token=token["token"]["access_token"],
             refresh_token=token.get("refresh_token"),
@@ -45,11 +45,10 @@ def tasks_api():
         ).execute()
         events = tasks_result.get("items", [])
         # 출력 데이터 확인용
-        st.write(events)
+        #st.write(events)
 
         tasks_events=list()
 
-        st.subheader("📅 오늘 이후 이벤트")
         if not events:
             st.write("예정된 일정이 없습니다.")
         for event in events:

@@ -8,13 +8,31 @@
 
 ---
 
-## 역할
+## 역할 + 기록
+### 성한빈
 ```
-성한빈 : 챗봇, 강아지 정보 페이지, 구글 드라이브 연동(부)
+역할 : 챗봇, 강아지 정보 페이지, 구글 드라이브 연동(부)
 
-심규상 : 강아지 증상 데이터를 벡터 DB에 저장하고, 이를 기반으로 질문에 답하는 전문 챗봇 설계, LLM과 캘린더 연동(주)
+```
+### 심규상
+```
+역할 : 강아지 증상 데이터를 벡터 DB에 저장하고, 이를 기반으로 질문에 답하는 전문 챗봇 설계, LLM과 캘린더 연동(주)
 
-오병재 : 깃허브 관리, 로그인, 백엔드, LLM과 캘린더 연동(부), 구글 드라이브 연동(주)
+```
+### 오병재
+```
+역할 : 깃허브 관리, 로그인, 백엔드, LLM과 캘린더 연동(부), 구글 드라이브 연동(주)
+
+2. 구글 캘린더 여러개인 경우도 해결하셈
+3. 구글 캘린더 리마인더 추가하기
+4. create_schedule와 pages/calendar_page.py를 합쳐야함
+10. MCP 를 이용한 자동화 시스템
+
+
+services\AI와 pages/chatbot.py pages/health_note.py가 연동되어있음을 기억하셈
+
+
+
 ```
 
 ---
@@ -47,6 +65,7 @@ dog_ai_service/
     ├── tasks_api.py              : 구글 Tasks API 처리
     ├── calendar_api.py           : 캘린더 API 처리
     ├── login_api.py              : 로그인 처리 API
+    ├── drive_api.py              : 구글 드라이브(시트) API
     ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈
     └── AI/                       : AI 관련 기능 모듈
         ├── extract_event_info.py : 자연어(사용자 프롬프트)를 json으로 변환하는 모듈
@@ -60,6 +79,21 @@ dog_ai_service/
 ## 서버 실행/점검 커멘드
 > streamlit run app.py --server.port 8080  
 > streamlit hello
+
+---
+
+## Git 커밋명 규칙
+```
+- **Feat : 신규 기능 추가**
+- **Fix : 버그 수정 **
+- Build : 빌드 관련 파일 수정
+- Chore : 기타 수정
+- Ci : 지속적 개발에 따른 수정
+- Docs : 문서 수정
+- Style : 코드 스타일, 포멧형식 관련
+- Refactor : 리팩토링
+- Test : 테스트 코드 수정
+```
 
 ---
 
@@ -115,8 +149,7 @@ dog_ai_service/
 > 아래 코드를 입력하여 각 branch가 제대로 추가되었는지 확인  
 >> git branch -r
 >
-> 특정 커밋의 수정사항 취소하고 새로 커밋
->> git revert <되돌리고 싶은 커밋 id>
+
 
 ---
 
@@ -137,8 +170,10 @@ dog_ai_service/
 > branch 병합하기(현재 branch를 대상으로 명령어의 branch를 덮어씌우는 느낌)
 >> git merge [branch명]
 >
-> 특정 커밋의 수정사항 취소하고 새로 커밋하고 esc한 후에 :q 엔터
->> git revert <되돌리고 싶은 커밋 id>
+> 해당 커밋의 수정사항'만' 취소하고 새로 커밋하는 명령어
+>> git revert <되돌리고 싶은 커밋 id>  
+>> ```코드 입력 시 터미널에 이상한 코드가(vi이라고 .txt랑 비슷한 느낌)가 나오면 esc > :q 입력 > 엔터 누르고 깃헙에 푸쉬하면 적용완료```
+
 
 ---
 
@@ -172,15 +207,5 @@ login_api.py에서
 redirect_uri="http://localhost:8080"
 
 
-```
----
-
-## 기능 추가 계획
-```
-MCP 를 이용한 자동화 시스템
-create_schedule와 pages/calendar_page.py를 합쳐야함
-구글 캘린더 리마인더 추가하기
-
-services\AI와 pages/chatbot.py pages/health_note.py가 연동되어있음
 ```
 ---
