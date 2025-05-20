@@ -9,17 +9,14 @@ from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 # 설정값
 from config import TIME_MIN,TIME_MAX,MAX_RESULTS
 
-
-
-
-def calendar_api():
+def calendar_service():
     client_id=GOOGLE_CLIENT_ID
     client_secret=GOOGLE_CLIENT_SECRET
 
     # 세션 상태에 token이 없으면 로그인 버튼 표시
     # 사용할 계정의 Google Calendar API를 사용 상태로 바꾸어야 사용가능
     if "token" not in st.session_state:
-        pass
+        return None
     else:
         token = st.session_state.token
         # 캘린더에 사용을 위한 구글계정 정보를 세션에서 가져오기
@@ -33,58 +30,79 @@ def calendar_api():
         )
         # 캘린더 API 서비스 객체 생성
         service = build("calendar", "v3", credentials=creds)
-        # 캘린더 목록 전부 가져오기
-        page_token = None
-        while True:
-            calendar_list = service.calendarList().list(pageToken=page_token).execute()
-            for calendar_list_entry in calendar_list['items']:
-                st.info(calendar_list_entry)
-            page_token = calendar_list.get('nextPageToken')
-            if not page_token:
-                break
-        # 2020년부터 가져오기
-        time_min = TIME_MIN
-        # 2020년부터 가져오기
-        time_max = TIME_MAX
-        # 캘린더에서 대충 최신 이벤트 50개 가져오기
-        events_result = service.events().list(
-            calendarId="primary",
-            timeMin=time_min,
-            timeMax=time_max,
-            maxResults=MAX_RESULTS,
-            singleEvents=True,
-            orderBy="startTime"
-        ).execute()
-        events = events_result.get("items", [])
-        #테스트
-        st.info(f"calendar_api events : {events}")
+    
+    return service
 
-        calendar_events=[]
+def calendar_api():
+    service=calendar_service()
+    # 미로그인 시 값없음
+    if service is None:
+        return []
 
-        if not events:
-            st.write("예정된 일정이 없습니다.")
-        for event in events:
-            is_datetime = "dateTime" in event["start"]
-            is_summary = "summary" in event
+    # 2020년부터 가져오기
+    time_min = TIME_MIN
+    # 2020년부터 가져오기
+    time_max = TIME_MAX
+    # 캘린더에서 대충 최신 이벤트 50개 가져오기
+    events_result = service.events().list(
+        calendarId="primary" if "selected_calendar" not in st.session_state else st.session_state.selected_calendar,
+        timeMin=time_min,
+        timeMax=time_max,
+        maxResults=MAX_RESULTS,
+        singleEvents=True,
+        orderBy="startTime"
+    ).execute()
+    events = events_result.get("items", [])
 
-            start = event["start"].get("dateTime", event["start"].get("date"))
-            end = event.get("end", {}).get("dateTime", None)  # end는 없을 수도 있음
+    calendar_events=[]
 
-            event_data = {
-                "title": event['summary'] if is_summary else "제목없음",
-                "start": start[:16] if is_datetime else start,
-                "resourceId": "a",
-            }
+    if not events:
+        st.write("예정된 일정이 없습니다.")
+    for event in events:
+        is_datetime = "dateTime" in event["start"]
+        is_summary = "summary" in event
 
-            if is_datetime:
-                event_data["end"] = end[:16] if end else start[:16]
-                event_data["allDay"] = False
-            else:
-                event_data["allDay"] = True
+        start = event["start"].get("dateTime", event["start"].get("date"))
+        end = event.get("end", {}).get("dateTime", None)  # end는 없을 수도 있음
 
-            calendar_events.append(event_data)
-        return calendar_events
+        event_data = {
+            "title": event['summary'] if is_summary else "제목없음",
+            "start": start[:16] if is_datetime else start,
+            "resourceId": "a",
+        }
+
+        if is_datetime:
+            event_data["end"] = end[:16] if end else start[:16]
+            event_data["allDay"] = False
+        else:
+            event_data["allDay"] = True
+
+        calendar_events.append(event_data)
+    return calendar_events
 
 
+def get_calendar_id():
+    service=calendar_service()
+    if service is None:
+        return 
+    calendar_list={}
+    # 캘린더 목록 전부 가져오기
+    page_token = None
+    while True:
+        calendar_list_origin = service.calendarList().list(pageToken=page_token).execute()
+        for calendar_list_entry in calendar_list_origin['items']:
+            calendar_list[calendar_list_entry["id"]]=calendar_list_entry # 캘린더 리스트에 추가
+            st.info(calendar_list_entry)
+        page_token = calendar_list_origin.get('nextPageToken')
+        if not page_token:
+            break
+    selected_calendar=st.selectbox(
+        "캘린더 :",
+        calendar_list.keys(),
+        format_func=lambda x:calendar_list[x]["summary"]
+    )
+    st.session_state.selected_calendar = selected_calendar
 
+
+    
 
