@@ -24,6 +24,7 @@ dog_ai_service/
 │   ├── sidebar.py      : 사이드 바
 │   ├── dog_data.py     : dog_ui 데이터
 │   ├── dog_ui.py       : 강아지 정보 UI
+│   ├── dog_schedule.py : 강아지 스케줄링 모듈
 │   └── st_calendar.py  : streamlit 캘린더출력
 ├── pages/
 │   ├── __init__.py     : 모듈 정리
