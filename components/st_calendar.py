@@ -1,7 +1,10 @@
 import streamlit as st
 from streamlit_calendar import calendar as cld
-from services.calendar_api import get_calendar_events, session_set_calendar_list
+from services.calendar_api import get_calendar_events, session_set_calendar_list, del_calendar_events, update_calendar_events
 from services.tasks_api import tasks_api
+# 날짜 입력용
+from datetime import datetime, time
+import pytz
 
 def st_calendar():
     calendar_options = {
@@ -124,25 +127,68 @@ def st_calendar():
             st.markdown(f"**이벤트 아이디:** `{calendar_event_id}`")
 
             st.divider()
-
+###
             # 수정 모드 토글
             with st.expander("✏️ 이벤트 수정"):
                 new_title = st.text_input("제목", value=title)
                 new_description = st.text_area("설명", value=description)
-                new_start = st.text_input("시작일", value=start)
-                new_end = st.text_input("종료일", value=end or "")
-                new_all_day = st.checkbox("종일 이벤트", value=all_day)
+                tz = pytz.timezone("Asia/Seoul")
+
+                # 사용자 입력값 받기
+                new_all_day = st.checkbox("종일 여부", value=all_day)
+                new_start_date = st.date_input("📅 시작날짜", value=start[:10])
+                new_end_date = st.date_input("📅 종료날짜", value=end[:10] if end else None)
+
+                if new_all_day:
+                    # 종일 이벤트일 경우: date만 사용
+                    start_iso = datetime.strptime(str(new_start_date), "%Y-%m-%d").date().isoformat()
+                    end_iso = datetime.strptime(str(new_end_date), "%Y-%m-%d").date().isoformat()
+                    start = {"date": start_iso}
+                    end = {"date": end_iso}
+                else:
+                    # 시간 정보도 있는 이벤트
+                    original_start_dt = datetime.fromisoformat(start) if isinstance(start, str) and 'T' in start else None
+                    original_end_dt = datetime.fromisoformat(end) if end and isinstance(end, str) and 'T' in end else None
+
+                    start_hour = original_start_dt.hour if original_start_dt else 9
+                    start_minute = original_start_dt.minute if original_start_dt else 0
+
+                    end_hour = original_end_dt.hour if original_end_dt else 10
+                    end_minute = original_end_dt.minute if original_end_dt else 0
+
+                    # 시간 분 선택값 적용
+                    start_hour = st.selectbox("시작 시간 (시)", list(range(0, 24)), index=start_hour)
+                    start_minute = st.selectbox("시작 시간 (분)", list(range(0, 60)), index=start_minute)
+
+                    end_hour = st.selectbox("종료 시간 (시)", list(range(0, 24)), index=end_hour)
+                    end_minute = st.selectbox("종료 시간 (분)", list(range(0, 60)), index=end_minute)
+                    
+                    new_start_time = time(hour=start_hour, minute=start_minute)
+                    new_end_time = time(hour=end_hour, minute=end_minute)
+
+                    start_dt = tz.localize(datetime.combine(new_start_date, new_start_time))
+                    end_dt = tz.localize(datetime.combine(new_end_date, new_end_time))
+
+                    start = {"dateTime": start_dt.isoformat(), "timeZone": "Asia/Seoul"}
+                    end = {"dateTime": end_dt.isoformat(), "timeZone": "Asia/Seoul"}
 
                 if st.button("✅ 수정 저장"):
-                    # 여기서 수정 요청 처리 함수 호출 필요 (예: update_calendar_event)
-                    st.success("수정된 이벤트 정보 저장 요청 완료 (예시)")
-                    # 실제 적용은 API 연동 함수로!
-
+                    update_calendar_events(
+                        event_id=calendar_event_id,
+                        summary=new_title,
+                        description=new_description,
+                        start_time=start,
+                        end_time=end,
+                        allDay=new_all_day,
+                        calendar_id=calendar_id
+                    )
+##
             # 삭제 버튼
             if st.button("🗑️ 이 이벤트 삭제"):
-                # 여기서 삭제 요청 처리 함수 호출 필요 (예: delete_calendar_event)
-                st.warning("이벤트 삭제 요청 완료 (예시)")
-                # 실제 삭제도 마찬가지로 API 연동 필요
+                del_calendar_events(calendar_event_id, calendar_id_print)
+                st.rerun()
+                st.success("✅ 이벤트를 성공적으로 삭제했습니다.")
+
 
 
 

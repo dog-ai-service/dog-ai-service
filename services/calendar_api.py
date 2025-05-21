@@ -6,6 +6,9 @@ from googleapiclient.discovery import build
 from services.make_creds_api import make_creds
 # 설정값
 from config import TIME_MIN,TIME_MAX,MAX_RESULTS
+# http 오류 처리용 
+from googleapiclient.errors import HttpError
+
 
 # calendar_id의 캘린더 이벤트를 리스트(딕셔너리) 형태로 반환 / 미로그인시 []로 널값 반환
 def get_calendar_events(calendar_id):
@@ -33,6 +36,8 @@ def get_calendar_events(calendar_id):
         orderBy="startTime"
     ).execute()
     events = events_result.get("items", [])
+    #테스트
+    st.info(f"events : {events}")
     calendar_events=[]
 
     if not events:
@@ -52,7 +57,8 @@ def get_calendar_events(calendar_id):
             "description" : event.get("description", "설명없음"),
             "calendar_id" : calendar_id,
             "event_id" : event.get("id","아이디오류"),
-            "calendar_summary" : st.session_state.calendar_list.get(calendar_id, "제목없음")
+            "calendar_summary" : st.session_state.calendar_list.get(calendar_id, "제목없음"),
+            "all_day" : event.get("all_day", True)
         }
 
         if is_datetime:
@@ -64,7 +70,6 @@ def get_calendar_events(calendar_id):
         calendar_events.append(event_data)
     return calendar_events
 ''' events 값 예시
-
 [
   {
     "kind": "calendar#event",
@@ -87,10 +92,10 @@ def get_calendar_events(calendar_id):
       "dateTime": "2025-05-07T18:30:00+09:00",
       "timeZone": "Asia/Seoul"
     },
-    "end": {
-      "dateTime": "2025-05-07T19:30:00+09:00",
-      "timeZone": "Asia/Seoul"
-    },
+"end": {
+    "dateTime": "2025-05-07T19:30:00+09:00",
+    "timeZone": "Asia/Seoul"
+},
     "iCalUID": "0a3aqb2bflq9st47hnhi08q92h@google.com",
     "sequence": 1,
     "reminders": {
@@ -134,17 +139,75 @@ def get_calendar_events(calendar_id):
 
 
 # calendar_id의 캘린더 이벤트를 삭제 
-def del_calendar_events(calendar_id):
+def del_calendar_events(event_id, calendar_id='primary'):
     creds = make_creds("calendar")
     
-    # 미로그인시 [] 반환
+    # 미로그인시 반환
     if not creds:
         st.error("❌ 먼저 로그인하세요")
-        return []
+        return
 
     # 캘린더 API 서비스 객체 생성
     service = build("calendar", "v3", credentials=creds)
+    
+    try:
+        service.events().delete(calendarId=calendar_id, eventId=event_id).execute()
+        st.success("✅ 이벤트를 성공적으로 삭제했습니다.")
+    except HttpError as error:
+        status = error.resp.status
+        if status == 404:
+            st.error("❌ 이벤트를 찾을 수 없습니다. (404 Not Found)")
+        elif status == 403:
+            st.warning("⚠️ 해당 캘린더에 대한 권한이 없습니다. (403 Forbidden)")
+        else:
+            st.error(f"❌ 알 수 없는 오류가 발생했습니다: {error}")
 
+# calendar_id의 캘린더 이벤트를 수정
+def update_calendar_events(event_id, summary, description, start_time, end_time, allDay, calendar_id='primary'):
+    creds = make_creds("calendar")
+
+    # 미로그인시 반환
+    if not creds:
+        st.error("❌ 먼저 로그인하세요")
+        return
+
+    service = build("calendar", "v3", credentials=creds)
+    
+    # 기존 이벤트 불러오기
+    event = service.events().get(calendarId=calendar_id, eventId=event_id).execute()
+
+    # allDay 여부에 따라 start/end 포맷 분기
+    if allDay:
+        body = {
+            "summary": summary,
+            "description": description,
+            "start": start_time,
+            "end": end_time,
+        }
+    else:
+        body = {
+            "summary": summary,
+            "description": description,
+            "start": {"dateTime": start_time, "timeZone": "Asia/Seoul"},
+            "end": {"dateTime": end_time, "timeZone": "Asia/Seoul"},
+        }
+
+    # 이벤트 업데이트
+    try:
+        updated = service.events().patch(calendarId=calendar_id, eventId=event_id, body=body).execute()
+        st.success(f"✅ 이벤트가 수정되었습니다: {updated.get('summary')}")
+    except HttpError as error:
+        status = error.resp.status
+        if status == 404:
+            st.error(f"❌ 이벤트를 찾을 수 없습니다. (404 Not Found)")
+            st.error(f"id : {calendar_id}")
+        elif status == 403:
+            st.warning("⚠️ 해당 캘린더에 대한 권한이 없습니다. (403 Forbidden)")
+        else:
+            st.error(f"❌ 알 수 없는 오류가 발생했습니다: {error}")
+
+    
+    
 
 
 # 세션.selected_calendar에 모든 캘린더 목록의 정보 저장 딕(id, summary) / 실패 시 
