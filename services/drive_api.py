@@ -117,8 +117,6 @@ def sheet_read(spreadsheet_id):
             st.info("시트에 데이터 없음")
             return []
         
-        #테스트
-        st.write("시트의 데이터")
         values=json_key_change(values)  # 키 변경
         st.table(values)    # st표
         st.write(values)    # st표
