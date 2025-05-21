@@ -76,3 +76,49 @@ def calendar_api():
 
             calendar_events.append(event_data)
         return calendar_events
+    
+def get_calendar_service():
+    """
+    세션의 OAuth 토큰으로 Google Calendar API 서비스 객체를 생성해 리턴합니다.
+    """
+    if "token" not in st.session_state:
+        st.error("Google 로그인 정보가 없습니다.")
+        return None
+
+    tok = st.session_state.token
+    # 토큰 키 이름은 실제 저장 구조에 맞춰 조정하세요
+    access_token  = tok.get("access_token") or tok["token"]["access_token"]
+    refresh_token = tok.get("refresh_token")
+
+    creds = Credentials(
+        token=access_token,
+        refresh_token=refresh_token,
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+        scopes=["https://www.googleapis.com/auth/calendar"]
+    )
+    try:
+        service = build("calendar", "v3", credentials=creds)
+        return service
+    except Exception as e:
+        st.error(f"캘린더 서비스 생성 오류: {e}")
+        return None
+
+def list_events(service, time_min="2020-01-01T00:00:00Z", time_max="2030-01-01T00:00:00Z"):
+    """
+    주어진 서비스 객체로 이벤트를 조회하여 리턴합니다.
+    """
+    try:
+        events_result = service.events().list(
+            calendarId="primary",
+            timeMin=time_min,
+            timeMax=time_max,
+            maxResults=50,
+            singleEvents=True,
+            orderBy="startTime"
+        ).execute()
+        return events_result.get("items", [])
+    except Exception as e:
+        st.error(f"이벤트 조회 오류: {e}")
+        return []    

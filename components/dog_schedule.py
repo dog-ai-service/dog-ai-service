@@ -3,6 +3,8 @@ import json
 from openai import OpenAI
 from datetime import date
 from env_config import OPENAI_API_MODEL, OPENAI_API_TEMPERATURE, OPENAI_API_KEY
+from services.calendar_api import get_calendar_service
+from components.schedule_to_calendar import push_next_only
 
 # 오늘 날짜 (ISO-8601)
 today = date.today().isoformat()
@@ -176,6 +178,9 @@ def fetch_personalized_schedule(dogs):
 
 # Streamlit 버튼 핸들러 예시
 def dog_scheduling():
+    service = get_calendar_service()
+    if not service:
+        return  # 서비스 생성 실패 시 중단
     if st.button("개인화 케어 스케줄 생성"):
         dogs = st.session_state.get("dogs", [])
         if not dogs:
@@ -210,7 +215,7 @@ def dog_scheduling():
         # 4) 재활용 후 최종 저장
         st.session_state.schedules = new_schedules
 
-        # push_next_only(schedules, calendar_service)
+        push_next_only(new_schedules, service)
 
     # 화면에 JSON 표시
     if sched := st.session_state.get("schedules"):
