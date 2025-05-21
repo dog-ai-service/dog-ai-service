@@ -1,17 +1,7 @@
-'''
-    - 강아지 스케줄 생성 데이터
-        st.session_state.schedules = [
-        {
-        'name': '청이', 
-        'schedule': 
-        [
-        {'type': 'feeding', 'period': 'PT8H', 'duration': 'PT10M', 'count': 3, 'next': ['2025-05-21T08:00:00', '2025-05-21T16:00:00', '2025-05-21T20:00:00']}, {'type': 'walking', 'period': 'PT8H', 'duration': 'PT20M', 'count': 2, 'next': ['2025-05-21T10:00:00', '2025-05-21T22:00:00']}, {'type': 'bathing', 'period': 'P30D', 'next': ['2025-06-19T10:00:00']}, {'type': 'grooming', 'period': 'P60D', 'next': ['2025-07-19T10:00:00']}, {'type': 'heartworm_prevention', 'period': 'P1M', 'next': ['2025-06-20T10:00:00']}, {'type': 'internal_parasite', 'period': 'P3M', 'next': ['2025-08-20T10:00:00']}, {'type': 'vaccination', 'subtype': 'DHPPL', 'period': 'P1Y', 'next': ['2025-11-22T10:00:00']}, {'type': 'vaccination', 'subtype': 'rabies', 'period': 'P1Y', 'next': ['2025-11-24T10:00:00']}]}]
-'''
-
-from datetime import date
 import streamlit as st
 import json
 from openai import OpenAI
+from datetime import date
 from env_config import OPENAI_API_MODEL, OPENAI_API_TEMPERATURE, OPENAI_API_KEY
 
 # 오늘 날짜 (ISO-8601)
@@ -68,7 +58,9 @@ SYSTEM_PROMPT = f"""
   • 보강: 매년 1회  
 - **광견병 (Rabies)**  
   • 기초: 생후 3개월 이상 1회  
-  • 보강: 첫 접종 6개월 후 1회 → 그 뒤 매년 1회  
+  • 보강: 첫 접종 6개월 후 1회 → 그 뒤 매년 1회
+
+심장사상충 예방, 내부 기생충 예방, 기타 예방접종의 각각의 일정들은 같은 월에 진행하는 경우, 되도록 모두 같은 날에 진행한다.
 
 모든 `"period"`는 **다음 반복 일정까지의 간격**을 나타내는 ISO 8601 기간 문자열이어야 하고,  
 필요 시 **지속시간(duration)** 은 별도 `duration` 필드에 ISO 8601 기간 문자열로 정의하세요.  
@@ -127,6 +119,18 @@ SYSTEM_PROMPT = f"""
         "subtype": "rabies",
         "period": "P1Y",
         "next": ["2025-11-24T10:00:00"]
+      }},
+      {{
+        "type": "vaccination",
+        "subtype": "corona",
+        "period": "P1Y",
+        "next": ["2025-11-22T10:00:00"]
+      }},
+      {{
+        "type": "vaccination",
+        "subtype": "kennel_cough",
+        "period": "P1Y",
+        "next": ["2025-11-22T10:00:00"]
       }}
     ]
   }}

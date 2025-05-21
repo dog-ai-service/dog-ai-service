@@ -4,7 +4,7 @@ import streamlit as st
 #사이드바 로그인
 from components.sidebar import sidebar
 from components.dog_ui import dog_info_page
-from components.dog_scheduling import dog_scheduling
+from components.dog_schedule import dog_scheduling
 import jwt
 sidebar()
 
