@@ -1,15 +1,32 @@
-# ui
 import streamlit as st
-# 사이드바 로그인
-from components.sidebar import sidebar
-#
-from services.drive_api import sheet_create, sheet_write, sheet_read
-# 구글 권한 사용을 위한 패키지
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-# 환경변수
-from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+from streamlit_cookies_manager import EncryptedCookieManager
+import json
+# 암호화 비밀번호 (실제 서비스에선 환경변수로 관리하세요)
+COOKIE_SECRET = "my-very-secret-key"
 
-sidebar()
+cookies = EncryptedCookieManager(
+    prefix="myapp/",
+    password=COOKIE_SECRET,
+)
 
-st.checkbox("선택", ['a','b','c'])
+if not cookies.ready():
+    st.stop()
+
+st.title("EncryptedCookieManager 테스트")
+
+token = cookies.get("token", None)
+
+if token:
+    st.write("쿠키에 저장된 토큰:", token)
+else:
+    st.write("쿠키에 토큰이 없습니다.")
+
+if st.button("쿠키에 토큰 저장"):
+    sample_token = {"access_token": "abc123", "expires_in": 3600}
+    cookies["token"] = json.dumps(token)
+    st.rerun()
+
+if st.button("쿠키에서 토큰 삭제"):
+    if "token" in cookies:
+        del cookies["token"]
+    st.rerun()
