@@ -307,6 +307,16 @@ def read_json_list_by_name(folder_name="dog_ai_service", filename="강아지리�
     else:
         st.error(f"❌ 다운로드 실패: {response.status_code} - {response.text}")
         return []
+    
+def _convert_dates(obj):
+    if isinstance(obj, dict):
+        return {k: _convert_dates(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_convert_dates(v) for v in obj]
+    if isinstance(obj, (datetime.date, datetime.datetime)):
+        return obj.isoformat()
+    return obj
+
 '''
 dogs = [
     {
