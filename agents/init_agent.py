@@ -9,3 +9,4 @@ def init_agent_chain(memory):
     tools = [DuckDuckGoSearchRun(name="Search")]
     chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm, tools=tools)
     return AgentExecutor.from_agent_and_tools(agent=chat_agent, tools=tools, memory=memory, return_intermediate_steps=True, handle_parsing_errors=True)
+

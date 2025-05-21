@@ -11,7 +11,7 @@
 ## 역할 + 기록
 ### 성한빈
 ```
-역할 : 챗봇, 강아지 정보 페이지, 구글 드라이브 연동(부)
+역할 : 챗봇(랭체인 에이전트 적용, 히스토리, 콜백 처리), 사용자 정보 페이지(강아지 등록 및 수정 폼), 개인화된 강아지 스케줄링 모듈, 구글 드라이브 연동(부)
 
 ```
 ### 심규상
@@ -71,6 +71,9 @@ dog_ai_service/
 │   ├── create_schedule.py        : 일정 생성 / 일정 요약 출력 컴포넌트
 │   ├── prompt_box.py             : 질문 입력창 컴포넌트 (**삭제 예정**)
 │   ├── sidebar.py                : 사이드바 UI 컴포넌트
+│   ├── dog_data.py               : dog_ui 데이터
+│   ├── dog_ui.py                 : 강아지 정보 UI
+│   ├── dog_schedule.py           : 강아지 스케줄링 모듈
 │   ├── st_calendar.py            : Streamlit용 캘린더 출력 컴포넌트
 │   └── symptom_chatbot.py        : 증상 전문 챗봇 컴포넌트
 │
@@ -78,6 +81,7 @@ dog_ai_service/
 │   ├── calendar_page.py          : 캘린더 페이지
 │   ├── chatbot.py                : 챗봇 페이지
 │   ├── health_note.py            : 건강 노트 페이지
+│   ├── user_page.py              : 사용자 정보 페이지
 │   └── test.py                   : 테스트용 파일
 │
 ├── agents/                       : LangChain Agent 초기화 관련 모듈
@@ -153,6 +157,8 @@ dog_ai_service/
 >
 > ### hanbin
 >> 성한빈 개인 branch
+>> #### hanbin-test
+>>> 성한빈 개인 테스트 branch
 > ### kyusang
 >> 심규상 개인 branch
 > ### obj
