@@ -101,18 +101,15 @@ def get_calendar_service():
     access_token  = tok.get("access_token") or tok["token"]["access_token"]
     refresh_token = tok.get("refresh_token")
 
-    creds = Credentials(
-        token=access_token,
-        refresh_token=refresh_token,
-        token_uri="https://oauth2.googleapis.com/token",
-        client_id=GOOGLE_CLIENT_ID,
-        client_secret=GOOGLE_CLIENT_SECRET,
-        scopes=["https://www.googleapis.com/auth/calendar"]
-    )
+    creds = make_creds("calendar")
+    # 미로그인시 fl
+    if not creds:
+        st.error("Google 로그인 정보가 없습니다.")
+        return
+    
     try:
         service = build("calendar", "v3", credentials=creds)
         return service
     except Exception as e:
         st.error(f"캘린더 서비스 생성 오류: {e}")
         return None
-
