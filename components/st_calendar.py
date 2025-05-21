@@ -91,6 +91,8 @@ def st_calendar():
 
     # 이벤트 클릭 시 설명 박스 표시
     if calendar_data and calendar_data.get("callback") == "eventClick":
+        #테스트
+        st.info(f"이벤트 : {calendar_data}")
         event = calendar_data["eventClick"]["event"]
         title = event.get("title", "제목 없음")
         start = event.get("start", "시작일 없음")
@@ -103,7 +105,10 @@ def st_calendar():
             event.get("extendedProps", {}).get("calendar_id", "아이디 없음")
         )
         calendar_summary=(
-            event.get("extendedProps", {}).get("calendar_summary", "아이디 없음")
+            event.get("extendedProps", {}).get("calendar_summary", "캘린더 아이디 오류")
+        )
+        calendar_event_id=(
+            event.get("extendedProps", {}).get("event_id", "이벤트 아이디 오류")
         )
 
         st.markdown("### 📌 선택한 이벤트")
@@ -116,6 +121,7 @@ def st_calendar():
             st.markdown(f"**설명:** `{description}`")
             st.markdown(f"**캘린더 아이디:** `{calendar_id_print}`")
             st.markdown(f"**캘린더 제목:** `{calendar_summary}`")
+            st.markdown(f"**이벤트 아이디:** `{calendar_event_id}`")
 
             st.divider()
 
@@ -138,6 +144,8 @@ def st_calendar():
                 st.warning("이벤트 삭제 요청 완료 (예시)")
                 # 실제 삭제도 마찬가지로 API 연동 필요
 
+
+
 '''
 이벤트 예시
 {
@@ -151,7 +159,8 @@ def st_calendar():
             "extendedProps": {
                 "description": "이벤트 테스트1의 설명",
                 "calendar_id": 캘린더의 id,
-                "calendar_summary" : 캘린더의 제목
+                "calendar_summary" : 캘린더의 제목,
+                "eventId" : 이벤트의 아이디
             }
         },
         "view": {
@@ -160,7 +169,7 @@ def st_calendar():
             "activeStart": "2025-04-26T15: 00: 00.000Z",
             "activeEnd": "2025-06-07T15: 00: 00.000Z",
             "currentStart": "2025-04-30T15: 00: 00.000Z",
-            "currentEnd": "2025-05-31T15: 00: 00.000Z"
+            "currentEnd": "2025-05-31T15: 00: 00.000Z",
         }
     }
 }

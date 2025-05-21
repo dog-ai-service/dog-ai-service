@@ -38,6 +38,7 @@ def get_calendar_events(calendar_id):
     if not events:
         st.write("예정된 일정이 없습니다.")
     for event in events:
+        
         is_datetime = "dateTime" in event["start"]
         is_summary = "summary" in event
 
@@ -50,6 +51,7 @@ def get_calendar_events(calendar_id):
             "resourceId": "a",
             "description" : event.get("description", "설명없음"),
             "calendar_id" : calendar_id,
+            "event_id" : event.get("id","아이디오류"),
             "calendar_summary" : st.session_state.calendar_list.get(calendar_id, "제목없음")
         }
 
@@ -61,6 +63,89 @@ def get_calendar_events(calendar_id):
 
         calendar_events.append(event_data)
     return calendar_events
+''' events 값 예시
+
+[
+  {
+    "kind": "calendar#event",
+    "etag": "3495463972021886",
+    "id": "0a3aqb2bflq9st47hnhi08q92h",
+    "status": "confirmed",
+    "htmlLink": "https://www.google.com/calendar/event?eid=MGEzYXFiMmJmbHE5c3Q0N2huaGkwOHE5MmggMDVkNGQwOTAwNzBiMDUwYzFiYWM4ODc0MWY2OTY2NjgzNTQzMjQ5ZjNjYmU1MzcyN2I1YTZkZjA1MjhlNjJjMkBn",
+    "created": "2025-05-20T09:05:14.000Z",
+    "updated": "2025-05-20T09:06:26.010Z",
+    "summary": "산책",
+    "creator": {
+      "email": "dhqudwo123@gmail.com"
+    },
+    "organizer": {
+      "email": "05d4d090070b050c1bac88741f6966683543249f3cbe53727b5a6df0528e62c2@group.calendar.google.com",
+      "displayName": "두번째 캘린더 테스트",
+      "self": true
+    },
+    "start": {
+      "dateTime": "2025-05-07T18:30:00+09:00",
+      "timeZone": "Asia/Seoul"
+    },
+    "end": {
+      "dateTime": "2025-05-07T19:30:00+09:00",
+      "timeZone": "Asia/Seoul"
+    },
+    "iCalUID": "0a3aqb2bflq9st47hnhi08q92h@google.com",
+    "sequence": 1,
+    "reminders": {
+      "useDefault": true
+    },
+    "eventType": "default"
+  },
+  {
+    "kind": "calendar#event",
+    "etag": "3495445135111230",
+    "id": "2fnslitesmiji4dkitv9ddtg4v",
+    "status": "confirmed",
+    "htmlLink": "https://www.google.com/calendar/event?eid=MmZuc2xpdGVzbWlqaTRka2l0djlkZHRnNHYgMDVkNGQwOTAwNzBiMDUwYzFiYWM4ODc0MWY2OTY2NjgzNTQzMjQ5ZjNjYmU1MzcyN2I1YTZkZjA1MjhlNjJjMkBn",
+    "created": "2025-05-20T06:29:27.000Z",
+    "updated": "2025-05-20T06:29:27.555Z",
+    "summary": "두번째 캘런더의 이벤트",
+    "creator": {
+      "email": "dhqudwo123@gmail.com"
+    },
+    "organizer": {
+      "email": "05d4d090070b050c1bac88741f6966683543249f3cbe53727b5a6df0528e62c2@group.calendar.google.com",
+      "displayName": "두번째 캘린더 테스트",
+      "self": true
+    },
+    "start": {
+      "date": "2025-05-22"
+    },
+    "end": {
+      "date": "2025-05-23"
+    },
+    "transparency": "transparent",
+    "iCalUID": "2fnslitesmiji4dkitv9ddtg4v@google.com",
+    "sequence": 0,
+    "reminders": {
+      "useDefault": false
+    },
+    "eventType": "default"
+  }
+]
+'''
+
+
+# calendar_id의 캘린더 이벤트를 삭제 
+def del_calendar_events(calendar_id):
+    creds = make_creds("calendar")
+    
+    # 미로그인시 [] 반환
+    if not creds:
+        st.error("❌ 먼저 로그인하세요")
+        return []
+
+    # 캘린더 API 서비스 객체 생성
+    service = build("calendar", "v3", credentials=creds)
+
+
 
 # 세션.selected_calendar에 모든 캘린더 목록의 정보 저장 딕(id, summary) / 실패 시 
 def session_set_calendar_list():
