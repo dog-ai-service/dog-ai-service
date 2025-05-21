@@ -89,26 +89,45 @@ def update_calendar_from_schedules(schedules: list, service):
     2) 갱신된 next 리스트를 기준으로 캘린더에 insert/patch
     """
     now = datetime.now()
+    today_date = datetime.now().date()
 
-    if "created_events" not in st.session_state:
+    if not st.session_state.get("created_events_loaded", False):
         st.session_state.created_events = {}
+        for dog in schedules:
+            for item in dog.get("schedule", []):
+                summary = make_summary(dog["name"], item)
+                # summary로 검색 → singleEvents=True 로 개별 인스턴스 가져오기
+                evs = service.events().list(
+                    calendarId="primary",
+                    q=summary,
+                    singleEvents=True,
+                    orderBy="startTime"
+                ).execute().get("items", [])
+                for ev in evs:
+                    start_iso = ev["start"].get("dateTime")
+                    if not start_iso:
+                        continue
+                    key = f"{dog['name']}:{item['type']}{item.get('subtype','')}:{start_iso}"
+                    st.session_state.created_events[key] = ev["id"]
+        st.session_state.created_events_loaded = True
 
     for dog in schedules:
         for item in dog.get("schedule", []):
             # 1) 지난 일정만 밀어서 next 전체 갱신
             new_next_list = []
             for nxt in item["next"]:
-                dt = parser.isoparse(nxt)
-                # 지난 일정이면 period 만큼 반복해서 올린다
-                while dt < now:
+                dt_date = parser.isoparse(nxt).date()
+                # date 단위로만 비교: dt_date < today_date 일 때만 반복 갱신
+                while dt_date < today_date:
                     nxt = add_duration_to_iso(nxt, item["period"])
-                    dt = parser.isoparse(nxt)
+                    dt_date = parser.isoparse(nxt).date()
+
                 new_next_list.append(nxt)
             item["next"] = new_next_list
-
             # 2) 갱신된 next들을 캘린더에 푸시
-            for nxt in item["next"]:
-                key = f"{dog['name']}:{item['type']}{item.get('subtype','')}:{nxt}"
+            for idx, nxt in enumerate(item["next"]):
+                # key에 idx 추가
+                key = f"{dog['name']}:{item['type']}{item.get('subtype','')}:{idx}"
                 start = nxt
                 end   = calculate_end(start, item.get("duration"))
                 body = {
