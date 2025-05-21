@@ -140,6 +140,8 @@ def dog_scheduling():
 
         # 4) 재활용 후 최종 저장
         st.session_state.schedules = new_schedules
+        # print(f"스케줄 타입: {type(st.session_state.schedules)}")
+        # print(f"스케줄 내용: {st.session_state.schedules}")
 
     # 2️⃣ 캘린더 동기화
     if st.button("2️⃣ 캘린더 업데이트"):

@@ -1,3 +1,4 @@
+# schedule_to_calendar.py
 import streamlit as st
 from dateutil import parser
 from datetime import datetime, timedelta
@@ -41,14 +42,13 @@ def add_duration_to_iso(start_iso: str, duration_iso: str) -> str:
     delta = parse_iso8601_duration(duration_iso)
     return (dt + delta).isoformat()
 
-def calculate_end(item: dict) -> str:
+def calculate_end(start_iso: str, duration_iso: str = None) -> str:
     """
     schedule 항목의 첫 번째 next 시각과 duration을 이용해 종료 시각 계산.
     duration이 없으면 기본 30분(PT30M) 적용.
     """
-    start_iso = item["next"][0]
-    duration_iso = item.get("duration") or "PT30M"
-    return add_duration_to_iso(start_iso, duration_iso)
+    dur = duration_iso or "PT30M"
+    return add_duration_to_iso(start_iso, dur)
 
 
 # --- 한글 & 이모지 매핑 ---
@@ -113,13 +113,15 @@ def update_calendar_from_schedules(schedules: list, calendar_service):
             for next_iso in item["next"]:
                 key = f"{dog['name']}:{item['type']}{item.get('subtype','')}:{next_iso}"
                 start = next_iso
-                end   = calculate_end(item)
+                end = calculate_end(next_iso, item.get("duration"))
                 summary = make_summary(dog["name"], item)
+                description = item.get("detail", "")
 
                 event_body = {
-                    "summary": summary,
-                    "start":   {"dateTime": start, "timeZone": "Asia/Seoul"},
-                    "end":     {"dateTime": end,   "timeZone": "Asia/Seoul"},
+                    "summary":     summary,
+                    "description": description,
+                    "start":       {"dateTime": start, "timeZone": "Asia/Seoul"},
+                    "end":         {"dateTime": end,   "timeZone": "Asia/Seoul"},
                 }
 
                 # 2) 기존 이벤트가 있으면 patch, 없으면 insert
