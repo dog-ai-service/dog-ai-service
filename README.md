@@ -37,10 +37,9 @@
 ```
 역할 : 깃허브 관리, 로그인, 백엔드, LLM과 캘린더 연동(부), 구글 드라이브 연동(주)
 
-
+1. create_schedule와 pages/calendar_page.py를 합쳐야함
 2. 구글 캘린더 리마인더 추가하기
 3. 시트 파일 업데이트도 추가하기
-4. create_schedule와 pages/calendar_page.py를 합쳐야함
 10. MCP 를 이용한 자동화 시스템
 
 
