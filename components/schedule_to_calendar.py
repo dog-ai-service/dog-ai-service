@@ -83,67 +83,52 @@ def make_summary(dog_name: str, item: dict) -> str:
         return f"{dog_name}: {kor}"
 
 
-def update_calendar_from_schedules(schedules: list, calendar_service):
+def update_calendar_from_schedules(schedules: list, service):
     """
-    - schedules: [
-         {
-           "name": str,
-           "schedule": [
-             {
-               "type": ..., "subtype"?: ..., 
-               "period": "...", "duration"?: "...", 
-               "next": ["...ISO...","..."], ...
-             }, ...
-           ]
-         }, ...
-       ]
-    - calendar_service: Google Calendar API 서비스 객체
+    1) 지난 일정만 period 만큼 밀어서 item['next'] 갱신
+    2) 갱신된 next 리스트를 기준으로 캘린더에 insert/patch
     """
     now = datetime.now()
 
-    # 생성/업데이트된 이벤트 ID 보관 레지스트리
     if "created_events" not in st.session_state:
-        st.session_state.created_events = {}  # key: f"{name}:{type}{subtype}:{next_iso}"
+        st.session_state.created_events = {}
 
     for dog in schedules:
         for item in dog.get("schedule", []):
-            updated_next = []
+            # 1) 지난 일정만 밀어서 next 전체 갱신
+            new_next_list = []
+            for nxt in item["next"]:
+                dt = parser.isoparse(nxt)
+                # 지난 일정이면 period 만큼 반복해서 올린다
+                while dt < now:
+                    nxt = add_duration_to_iso(nxt, item["period"])
+                    dt = parser.isoparse(nxt)
+                new_next_list.append(nxt)
+            item["next"] = new_next_list
 
-            # 1) 모든 next 시각에 대해 처리 (feeding/walking 같이 여러 번)
-            for next_iso in item["next"]:
-                key = f"{dog['name']}:{item['type']}{item.get('subtype','')}:{next_iso}"
-                start = next_iso
-                end = calculate_end(next_iso, item.get("duration"))
-                summary = make_summary(dog["name"], item)
-                description = item.get("detail", "")
-
-                event_body = {
-                    "summary":     summary,
-                    "description": description,
+            # 2) 갱신된 next들을 캘린더에 푸시
+            for nxt in item["next"]:
+                key = f"{dog['name']}:{item['type']}{item.get('subtype','')}:{nxt}"
+                start = nxt
+                end   = calculate_end(start, item.get("duration"))
+                body = {
+                    "summary":     make_summary(dog["name"], item),
+                    "description": item.get("detail", ""),
                     "start":       {"dateTime": start, "timeZone": "Asia/Seoul"},
                     "end":         {"dateTime": end,   "timeZone": "Asia/Seoul"},
                 }
 
-                # 2) 기존 이벤트가 있으면 patch, 없으면 insert
                 if key in st.session_state.created_events:
-                    calendar_service.events().patch(
+                    service.events().patch(
                         calendarId="primary",
                         eventId=st.session_state.created_events[key],
-                        body=event_body
+                        body=body
                     ).execute()
                 else:
-                    created = calendar_service.events().insert(
-                        calendarId="primary", body=event_body
+                    created = service.events().insert(
+                        calendarId="primary", body=body
                     ).execute()
                     st.session_state.created_events[key] = created["id"]
 
-                # 3) 지나간 일정이라면 period만큼 더해 next에 추가
-                #    (원하는 경우만 활성화: if parser.isoparse(next_iso) <= now:)
-                new_next = add_duration_to_iso(next_iso, item["period"])
-                updated_next.append(new_next)
-
-            # 4) item["next"] 전체 갱신
-            item["next"] = updated_next
-
-    # 5) 최종 갱신된 schedules를 세션에 저장
+    # 3) 세션에 최종 반영
     st.session_state.schedules = schedules

@@ -25,6 +25,7 @@ dog_ai_service/
 │   ├── dog_data.py     : dog_ui 데이터
 │   ├── dog_ui.py       : 강아지 정보 UI
 │   ├── dog_schedule.py : 강아지 스케줄링 모듈
+│   ├── schedule_to_calendar.py : 스케줄 데이터 -> 캘린더 푸쉬 / 일정 최신화 업데이트
 │   └── st_calendar.py  : streamlit 캘린더출력
 ├── pages/
 │   ├── __init__.py     : 모듈 정리
