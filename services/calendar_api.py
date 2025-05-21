@@ -76,7 +76,3 @@ def calendar_api():
 
             calendar_events.append(event_data)
         return calendar_events
-
-
-
-

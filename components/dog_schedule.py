@@ -180,10 +180,38 @@ def dog_scheduling():
         dogs = st.session_state.get("dogs", [])
         if not dogs:
             st.warning("먼저 강아지를 등록해주세요.")
-        else:
-            with st.spinner("생성 중…"):
-                schedules = fetch_personalized_schedule(dogs)
-                st.session_state.schedules = schedules
+            return
+        
+        # 1) 이전 스케줄 보관
+        old_schedules = st.session_state.get("schedules", [])
 
+        # 2) LLM 호출
+        with st.spinner("생성 중…"):
+            new_schedules = fetch_personalized_schedule(dogs)
+
+        # 3) 이전 next 값 재활용 로직
+        # old_schedules/new_schedules 는 [{ "name":…, "schedule":[…] }, …] 구조
+        # 각 항목을 dog 이름 + schedule 타입(key) 으로 매핑해 두면 빠릅니다.
+        old_map = {}
+        for dog in old_schedules:
+            for item in dog["schedule"]:
+                key = dog["name"] + ":" + item["type"] + item.get("subtype", "")
+                old_map[key] = item
+
+        # 병합
+        for dog in new_schedules:
+            for item in dog["schedule"]:
+                key = dog["name"] + ":" + item["type"] + item.get("subtype", "")
+                old_item = old_map.get(key)
+                # period 동일 → next 재활용
+                if old_item and old_item.get("period") == item.get("period"):
+                    item["next"] = old_item["next"]
+
+        # 4) 재활용 후 최종 저장
+        st.session_state.schedules = new_schedules
+
+        # push_next_only(schedules, calendar_service)
+
+    # 화면에 JSON 표시
     if sched := st.session_state.get("schedules"):
         st.json(sched)
