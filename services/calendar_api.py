@@ -140,5 +140,31 @@ def session_set_calendar_list():
     st.session_state.calendar_list = calendar_list
 
 
-    
+def get_calendar_service():
+    """
+    세션의 OAuth 토큰으로 Google Calendar API 서비스 객체를 생성해 리턴합니다.
+    """
+    if "token" not in st.session_state:
+        st.error("Google 로그인 정보가 없습니다.")
+        return None
+
+    tok = st.session_state.token
+    # 토큰 키 이름은 실제 저장 구조에 맞춰 조정하세요
+    access_token  = tok.get("access_token") or tok["token"]["access_token"]
+    refresh_token = tok.get("refresh_token")
+
+    creds = Credentials(
+        token=access_token,
+        refresh_token=refresh_token,
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+        scopes=["https://www.googleapis.com/auth/calendar"]
+    )
+    try:
+        service = build("calendar", "v3", credentials=creds)
+        return service
+    except Exception as e:
+        st.error(f"캘린더 서비스 생성 오류: {e}")
+        return None
 
