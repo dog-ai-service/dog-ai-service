@@ -26,11 +26,6 @@ def health_info_summation(health_info):
             temperature=0.1
         )
         text = health_info_summation.choices[0].message.content
-        # text_list = []
-        # lines = text.split('\n')
-        # for line in lines:
-        #     text_list.append(GoogleTranslator(source="auto", target="ko").translate(line))
-        # translated_text = "\n".join(text_list)
         return text
     except:
         return health_info
