@@ -9,6 +9,8 @@ from config import TIME_MIN,TIME_MAX,MAX_RESULTS
 # http 오류 처리용 
 from googleapiclient.errors import HttpError
 
+from datetime import datetime, timedelta
+
 
 # calendar_id의 캘린더 이벤트를 리스트(딕셔너리) 형태로 반환 / 미로그인시 []로 널값 반환
 def get_calendar_events(calendar_id):
@@ -165,48 +167,87 @@ def del_calendar_events(event_id, calendar_id='primary'):
 # calendar_id의 캘린더 이벤트를 수정
 def update_calendar_events(event_id, summary, description, start_time, end_time, allDay, calendar_id='primary'):
     creds = make_creds("calendar")
-
-    # 미로그인시 반환
     if not creds:
         st.error("❌ 먼저 로그인하세요")
         return
 
     service = build("calendar", "v3", credentials=creds)
-    
-    # 기존 이벤트 불러오기
-    event = service.events().get(calendarId=calendar_id, eventId=event_id).execute()
 
-    # allDay 여부에 따라 start/end 포맷 분기
-    if allDay:
-        body = {
-            "summary": summary,
-            "description": description,
-            "start": start_time,
-            "end": end_time,
-        }
-    else:
-        body = {
-            "summary": summary,
-            "description": description,
-            "start": {"dateTime": start_time, "timeZone": "Asia/Seoul"},
-            "end": {"dateTime": end_time, "timeZone": "Asia/Seoul"},
-        }
-
-    # 이벤트 업데이트
+    # Step 1: 기존 이벤트 삭제
     try:
-        updated = service.events().patch(calendarId=calendar_id, eventId=event_id, body=body).execute()
-        st.success(f"✅ 이벤트가 수정되었습니다: {updated.get('summary')}")
+        service.events().delete(calendarId=calendar_id, eventId=event_id).execute()
+        st.info("🔄 기존 이벤트를 삭제했습니다.")
     except HttpError as error:
         status = error.resp.status
         if status == 404:
-            st.error(f"❌ 이벤트를 찾을 수 없습니다. (404 Not Found)")
-            st.error(f"id : {calendar_id}")
+            st.warning("⚠️ 기존 이벤트를 찾을 수 없어 삭제하지 못했습니다. 새로 생성만 시도합니다.")
         elif status == 403:
-            st.warning("⚠️ 해당 캘린더에 대한 권한이 없습니다. (403 Forbidden)")
+            st.error("❌ 캘린더 권한이 없어 삭제할 수 없습니다.")
+            return
         else:
-            st.error(f"❌ 알 수 없는 오류가 발생했습니다: {error}")
+            st.error(f"❌ 이벤트 삭제 중 오류: {error}")
+            return
 
+    # Step 2: 새 이벤트 생성
+    if allDay:
+        # 종일 일정: date 포맷 사용
+        if isinstance(start_time, dict):
+            start_date_str = start_time.get("date")
+        else:
+            start_date_str = start_time
+
+        if isinstance(end_time, dict):
+            end_date_str = end_time.get("date")
+        else:
+            end_date_str = end_time
+
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+
+        event_body = {
+            "summary": summary,
+            "description": description,
+            "start": {"date": start_date.isoformat()},
+            "end": {"date": (end_date + timedelta(days=1)).isoformat()}
+        }
+    else:
+        # 시간 포함 일정: dateTime 포맷 사용
+        st.info(f"딕 : {start_time}")
+        event_body = {
+            "summary": summary,
+            "description": description,
+            "start": {"dateTime": start_time["dateTime"][:19], "timeZone": "Asia/Seoul"},
+            "end": {"dateTime": end_time["dateTime"][:19], "timeZone": "Asia/Seoul"}
+        }
+
+    try:
+        new_event = service.events().insert(calendarId=calendar_id, body=event_body).execute()
+        st.success(f"✅ 이벤트가 새로 생성되었습니다: {new_event.get('summary')}")
+    except HttpError as error:
+        st.error(f"❌ 이벤트 생성 중 오류 발생: {error}")
+
+# 시간 포맷 변경용
+def convert_event_times(event):
+    """
+    FullCalendar 이벤트 객체에서 start, end 값을
+    Google Calendar API에 맞는 포맷(dict)으로 변환
+    """
+    if event.get("allDay"):
+        # 종일 이벤트: 날짜만 필요 ("YYYY-MM-DD")
+        start = {"date": event["start"][:10]}
+        end = {"date": event["end"][:10]}
+    else:
+        # 시간 포함 이벤트: dateTime + timeZone 필요
+        start = {
+            "dateTime": event["start"],
+            "timeZone": "Asia/Seoul"
+        }
+        end = {
+            "dateTime": event["end"],
+            "timeZone": "Asia/Seoul"
+        }
     
+    return start, end
     
 
 
