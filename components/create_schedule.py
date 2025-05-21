@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import re
 import json
 from services.AI.extract_event_info import extract_event_info
-from services.AI.summation import summation
+from services.AI.schedule_summation import schedule_summation
 import pytz
 from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 from services.make_creds_api import make_creds
@@ -65,7 +65,7 @@ def summation_events():
             result['end'] = item['end']['dateTime']
             events_processed.append(result)
 
-        return summation(events_processed)
+        return schedule_summation(events_processed)
 
 
 

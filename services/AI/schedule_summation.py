@@ -12,7 +12,7 @@ from langchain_community.callbacks import StreamlitCallbackHandler
 load_dotenv()
 
 
-def summation(user_input):
+def schedule_summation(user_input):
     prompt = f"""
     오늘 견주의 일정은 아래와 같아. 
     {user_input}

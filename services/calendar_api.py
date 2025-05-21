@@ -3,63 +3,9 @@ import streamlit as st
 # 구글 권한 사용을 위한 패키지
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-import datetime
-# 환경변수
-from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 from services.make_creds_api import make_creds
 # 설정값
 from config import TIME_MIN,TIME_MAX,MAX_RESULTS
-
-# 
-def calendar_api():
-    creds = make_creds("calendar")
-    
-    if not creds:
-        st.error("❌ 먼저 로그인하세요")
-        return
-
-    # 캘린더 API 서비스 객체 생성
-    service = build("calendar", "v3", credentials=creds)
-    # TIME_MIN년부터 가져오기
-    time_min = TIME_MIN
-    # TIME_MAX년까지 가져오기
-    time_max = TIME_MAX
-    # 캘린더에서 대충 최신 이벤트 50개 가져오기
-    events_result = service.events().list(
-        calendarId="primary",
-        timeMin=time_min,
-        timeMax=time_max,
-        maxResults=MAX_RESULTS,
-        singleEvents=True,
-        orderBy="startTime"
-    ).execute()
-    events = events_result.get("items", [])
-
-    calendar_events=[]
-
-    if not events:
-        st.write("예정된 일정이 없습니다.")
-    for event in events:
-        is_datetime = "dateTime" in event["start"]
-        is_summary = "summary" in event
-
-        start = event["start"].get("dateTime", event["start"].get("date"))
-        end = event.get("end", {}).get("dateTime", None)  # end는 없을 수도 있음
-
-        event_data = {
-            "title": event['summary'] if is_summary else "제목없음",
-            "start": start[:16] if is_datetime else start,
-            "resourceId": "a",
-        }
-
-        if is_datetime:
-            event_data["end"] = end[:16] if end else start[:16]
-            event_data["allDay"] = False
-        else:
-            event_data["allDay"] = True
-
-        calendar_events.append(event_data)
-    return calendar_events
 
 # calendar_id의 캘린더 이벤트를 리스트(딕셔너리) 형태로 반환 / 미로그인시 []로 널값 반환
 def get_calendar_events(calendar_id):
@@ -87,7 +33,6 @@ def get_calendar_events(calendar_id):
         orderBy="startTime"
     ).execute()
     events = events_result.get("items", [])
-
     calendar_events=[]
 
     if not events:
@@ -103,6 +48,9 @@ def get_calendar_events(calendar_id):
             "title": event['summary'] if is_summary else "제목없음",
             "start": start[:16] if is_datetime else start,
             "resourceId": "a",
+            "description" : event.get("description", "설명없음"),
+            "calendar_id" : calendar_id,
+            "calendar_summary" : st.session_state.calendar_list.get(calendar_id, "제목없음")
         }
 
         if is_datetime:
@@ -136,7 +84,7 @@ def session_set_calendar_list():
         page_token = calendar_list_origin.get('nextPageToken')
         if not page_token:
             break
-        
+    
     st.session_state.calendar_list = calendar_list
 
 
