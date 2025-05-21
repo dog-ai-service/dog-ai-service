@@ -14,6 +14,7 @@ streamlit_calendar
 
 # 로그인 관련
 streamlit-oauth
+streamlit-cookies-manager    # 로그인 유지를 위한 쿠키
 
 # 구글 권한 관련
 google-api-python-client
