@@ -18,7 +18,7 @@ SYSTEM_PROMPT = f"""
 출력: JSON 배열 예시 —
 [
   {{
-    name, 
+    name,
     schedule: [
       {{
         type,             # feeding, walking, bathing, grooming, heartworm_prevention, internal_parasite, vaccination
@@ -29,33 +29,50 @@ SYSTEM_PROMPT = f"""
         detail?,          # 추가 메모
         next              # ISO 8601 타임스탬프 리스트
       }}
-      ]
+    ]
   }}
 ]
 
 규칙:
-- feeding:
-  • 소·중형(≤25kg): count=2, period=PT12H, duration=PT15M
-  • 대형(>25kg):     count=2, period=PT12H, duration=PT30M
-  • 비만 or note “급하게 먹음”: period=PT8H, duration=PT20M, count+=1
-- walking:
-  • 소·중형: count=2, period=PT12H, duration=PT20M
-  • 대형:     count=1, period=P1D,  duration=PT60M
-  • 과체중: count+=1; 관절문제→duration=PT10M
-- bathing: period=P14D  (건조→P21D(저자극 샴푸권장), 지성→P7D)
-- grooming: period=P60D
-- heartworm_prevention: period=P1M
+- feeding: period=P1D
+  • 소·중형(≤25kg): count=2, duration=PT15M  
+    → next 시각: **하루 2회**, 보통 **08:00**과 **20:00**에 설정  
+  • 대형(>25kg):     count=2, duration=PT30M  
+    → next 시각: **07:00**, **19:00**  
+  • 비만 or note “급하게 먹음”: duration=PT20M, count+=1  
+    → 아침(08:00), 점심(12:00), 저녁(20:00) 등 적절히 배분  
+- walking: period=P1D
+  • 소·중형: count=2, duration=PT20M  
+    → next 시각: **10:00**과 **18:00**  
+  • 대형:     count=1,  duration=PT60M  
+    → 다음 산책 시각: **17:00**  
+  • 과체중: count+=1; 관절문제→duration=PT10M  
+    → 추가 산책은 **15:00** 등  
+- bathing: period=P14D  (건조→P21D(저자극 샴푸권장), 지성→P7D)  
+  → 주말 오전(10:00) 또는 주말 저녁(18:00)  
+- grooming: period=P60D  
+  → 평일 18:00  
+- heartworm_prevention: period=P1M  
+  → 주말 오후(14:00)  
 - internal_parasite:
-  • 생후 ≤6개월: period=P1M
+  • 생후 ≤6개월: period=P1M  
+    → 주말 오후(14:00)  
   • 이후:         period=P3M
-- vaccination:
-  • subtype 필수 ∈ [DHPPL, rabies, corona, kennel_cough]
-  • period=P1Y
-- 동일 월 schedule(feeding, walking 제외)는 같은 일자, 예방접종은 birth월 기준
+- vaccination: 다음 네 개 항목을 각각 schedule에 모두 포함할 것:
+  - {{type: "vaccination", subtype:"DHPPL", period:"P1Y"}}
+  - {{type: "vaccination", subtype:"rabies", period:"P1Y"}}
+  - {{type: "vaccination", subtype:"corona", period:"P1Y"}}
+  - {{type: "vaccination", subtype:"kennel_cough", period:"P1Y"}}
+• 각각의 next:
+  - “올해 생일 월”의 주말 오후(14:00)에 설정  
+  - (만약 오늘이 생일 월을 지났으면 내년 생일 월 사용)
 - 필드 해설:
-  period=다음 간격, duration=소요 시간, next=예정 시각 리스트, detail=특이사항 기입(저자극 샴푸권장 등)
+  period=다음 간격, duration=소요 시간,  
+  next=예정 시각 리스트(feeding/walking은 위 지정 시간, 그 외는 평일 퇴근 후·주말 오후 시간대),  
+  detail=특이사항 기입(저자극 샴푸권장 등)  
 반환: 오직 JSON — 부가 설명 금지
 """
+
 
 
 def fetch_personalized_schedule(dogs):
