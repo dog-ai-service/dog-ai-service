@@ -48,6 +48,5 @@ def login_api():
         st.write(f"이메일: {decoded['email']}")
         if st.button("로그아웃"):
             del st.session_state["token"]
-            del cookies.token["token"]
             st.rerun()
 
