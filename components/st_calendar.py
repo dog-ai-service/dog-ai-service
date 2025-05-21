@@ -94,8 +94,6 @@ def st_calendar():
 
     # 이벤트 클릭 시 설명 박스 표시
     if calendar_data and calendar_data.get("callback") == "eventClick":
-        #테스트
-        st.info(f"이벤트 : {calendar_data}")
         event = calendar_data["eventClick"]["event"]
         title = event.get("title", "제목 없음")
         start = event.get("start", "시작일 없음")
@@ -124,9 +122,9 @@ def st_calendar():
                 st.markdown(f"**종료일:** `{end}`")
             st.markdown(f"**종일 여부:** `{'예' if all_day else '아니오'}`")
             st.markdown(f"**설명:** `{description}`")
-            st.markdown(f"**캘린더 아이디:** `{calendar_id_print}`")
+            #st.markdown(f"**캘린더 아이디:** `{calendar_id_print}`")
             st.markdown(f"**캘린더 제목:** `{calendar_summary}`")
-            st.markdown(f"**이벤트 아이디:** `{calendar_event_id}`")
+            #st.markdown(f"**이벤트 아이디:** `{calendar_event_id}`")
 
             st.divider()
 ###
@@ -156,14 +154,29 @@ def st_calendar():
                     default_end_dt = parse_dt(end, datetime.now().replace(hour=10, minute=0))
 
                     start_date = st.date_input("📅 시작 날짜", value=default_start_dt.date())
-                    start_time = st.time_input("🕒 시작 시간", value=default_start_dt.time())
-
                     end_date = st.date_input("📅 종료 날짜", value=default_end_dt.date())
-                    end_time = st.time_input("🕒 종료 시간", value=default_end_dt.time())
 
-                    start_dt = tz.localize(datetime.combine(start_date, start_time))
-                    end_dt = tz.localize(datetime.combine(end_date, end_time))
-                    
+                    st.markdown("### ⏰ 시작 시간")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        start_hour = st.selectbox("시", list(range(0, 24)), index=default_start_dt.hour)
+                    with col2:
+                        start_minute = st.selectbox("분", list(range(0, 60)), index=default_start_dt.minute)
+
+                    st.markdown("### ⏰ 종료 시간")
+                    col3, col4 = st.columns(2)
+                    with col3:
+                        end_hour = st.selectbox("시 ", list(range(0, 24)), index=default_end_dt.hour)
+                    with col4:
+                        end_minute = st.selectbox("분 ", list(range(0, 60)), index=default_end_dt.minute)
+
+                    start_time_obj = time(start_hour, start_minute)
+                    end_time_obj = time(end_hour, end_minute)
+
+                    tz = pytz.timezone("Asia/Seoul")
+                    start_dt = tz.localize(datetime.combine(start_date, start_time_obj))
+                    end_dt = tz.localize(datetime.combine(end_date, end_time_obj))
+
                     start_obj = {
                         "dateTime": start_dt.isoformat(),
                         "timeZone": "Asia/Seoul"
@@ -172,8 +185,6 @@ def st_calendar():
                         "dateTime": end_dt.isoformat(),
                         "timeZone": "Asia/Seoul"
                     }
-                    
-                st.write(f"시간 : {start_obj}")
 
                 if st.button("✅ 수정 저장"):
                     update_calendar_events(
@@ -185,6 +196,7 @@ def st_calendar():
                         allDay=new_all_day,
                         calendar_id=calendar_id_print
                     )
+                    st.rerun()
 
             # 삭제 확인 후 실행
             if st.button("🗑️ 이 이벤트 삭제"):

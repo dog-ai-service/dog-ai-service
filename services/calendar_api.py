@@ -38,8 +38,6 @@ def get_calendar_events(calendar_id):
         orderBy="startTime"
     ).execute()
     events = events_result.get("items", [])
-    #테스트
-    st.info(f"events : {events}")
     calendar_events=[]
 
     if not events:
@@ -164,7 +162,7 @@ def del_calendar_events(event_id, calendar_id='primary'):
         else:
             st.error(f"❌ 알 수 없는 오류가 발생했습니다: {error}")
 
-# calendar_id의 캘린더 이벤트를 수정
+# calendar_id의 캘린더 이벤트를 수정 (삭제 없이 patch로)
 def update_calendar_events(event_id, summary, description, start_time, end_time, allDay, calendar_id='primary'):
     creds = make_creds("calendar")
     if not creds:
@@ -173,22 +171,7 @@ def update_calendar_events(event_id, summary, description, start_time, end_time,
 
     service = build("calendar", "v3", credentials=creds)
 
-    # Step 1: 기존 이벤트 삭제
-    try:
-        service.events().delete(calendarId=calendar_id, eventId=event_id).execute()
-        st.info("🔄 기존 이벤트를 삭제했습니다.")
-    except HttpError as error:
-        status = error.resp.status
-        if status == 404:
-            st.warning("⚠️ 기존 이벤트를 찾을 수 없어 삭제하지 못했습니다. 새로 생성만 시도합니다.")
-        elif status == 403:
-            st.error("❌ 캘린더 권한이 없어 삭제할 수 없습니다.")
-            return
-        else:
-            st.error(f"❌ 이벤트 삭제 중 오류: {error}")
-            return
-
-    # Step 2: 새 이벤트 생성
+    # Step 1: 이벤트 본문 구성
     if allDay:
         # 종일 일정: date 포맷 사용
         if isinstance(start_time, dict):
@@ -212,43 +195,30 @@ def update_calendar_events(event_id, summary, description, start_time, end_time,
         }
     else:
         # 시간 포함 일정: dateTime 포맷 사용
-        st.info(f"딕 : {start_time}")
+        st.info(f"📌 전달받은 시작 시간: {start_time}")
         event_body = {
             "summary": summary,
             "description": description,
-            "start": {"dateTime": start_time["dateTime"][:19], "timeZone": "Asia/Seoul"},
-            "end": {"dateTime": end_time["dateTime"][:19], "timeZone": "Asia/Seoul"}
+            "start": {
+                "dateTime": start_time["dateTime"],
+                "timeZone": start_time.get("timeZone", "Asia/Seoul")
+            },
+            "end": {
+                "dateTime": end_time["dateTime"],
+                "timeZone": end_time.get("timeZone", "Asia/Seoul")
+            }
         }
 
+    # Step 2: patch로 이벤트 업데이트
     try:
-        new_event = service.events().insert(calendarId=calendar_id, body=event_body).execute()
-        st.success(f"✅ 이벤트가 새로 생성되었습니다: {new_event.get('summary')}")
+        updated_event = service.events().patch(
+            calendarId=calendar_id,
+            eventId=event_id,
+            body=event_body
+        ).execute()
+        st.success(f"✅ 이벤트가 수정되었습니다: {updated_event.get('summary')}")
     except HttpError as error:
-        st.error(f"❌ 이벤트 생성 중 오류 발생: {error}")
-
-# 시간 포맷 변경용
-def convert_event_times(event):
-    """
-    FullCalendar 이벤트 객체에서 start, end 값을
-    Google Calendar API에 맞는 포맷(dict)으로 변환
-    """
-    if event.get("allDay"):
-        # 종일 이벤트: 날짜만 필요 ("YYYY-MM-DD")
-        start = {"date": event["start"][:10]}
-        end = {"date": event["end"][:10]}
-    else:
-        # 시간 포함 이벤트: dateTime + timeZone 필요
-        start = {
-            "dateTime": event["start"],
-            "timeZone": "Asia/Seoul"
-        }
-        end = {
-            "dateTime": event["end"],
-            "timeZone": "Asia/Seoul"
-        }
-    
-    return start, end
-    
+        st.error(f"❌ 이벤트 수정 중 오류 발생: {error}")
 
 
 # 세션.selected_calendar에 모든 캘린더 목록의 정보 저장 딕(id, summary) / 실패 시 
