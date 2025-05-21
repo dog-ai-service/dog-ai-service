@@ -33,8 +33,6 @@ def get_calendar_events(calendar_id):
         orderBy="startTime"
     ).execute()
     events = events_result.get("items", [])
-    #테스트
-    st.info(f"이벤트 정보들 {events}")
     calendar_events=[]
 
     if not events:
@@ -50,7 +48,9 @@ def get_calendar_events(calendar_id):
             "title": event['summary'] if is_summary else "제목없음",
             "start": start[:16] if is_datetime else start,
             "resourceId": "a",
-            "description" : event.get("description", "설명없음")
+            "description" : event.get("description", "설명없음"),
+            "calendar_id" : calendar_id,
+            "calendar_summary" : st.session_state.calendar_list.get(calendar_id, "제목없음")
         }
 
         if is_datetime:

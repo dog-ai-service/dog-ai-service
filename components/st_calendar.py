@@ -88,29 +88,56 @@ def st_calendar():
             custom_css=custom_css,
             key=f'calendar', # Assign a widget key to prevent state loss
         )
-    
-    st.write(f"📆 캘린더 정보 : {calendar_data}")
 
     # 이벤트 클릭 시 설명 박스 표시
     if calendar_data and calendar_data.get("callback") == "eventClick":
         event = calendar_data["eventClick"]["event"]
         title = event.get("title", "제목 없음")
         start = event.get("start", "시작일 없음")
-        end = event.get("end", None)
+        end = event.get("end", "")
         all_day = event.get("allDay", False)
-        description=event.get("description", "설명없음")
+        description = (
+            event.get("extendedProps", {}).get("description", "설명 없음")
+        )
+        calendar_id_print=(
+            event.get("extendedProps", {}).get("calendar_id", "아이디 없음")
+        )
+        calendar_summary=(
+            event.get("extendedProps", {}).get("calendar_summary", "아이디 없음")
+        )
 
-        with st.container():
-            st.markdown("### 📌 선택한 이벤트")
-            st.info(f"**제목:** {title}")
-            st.write(f"**시작일:** {start}")
+        st.markdown("### 📌 선택한 이벤트")
+        with st.container(border=True):
+            st.markdown(f"**제목:** `{title}`")
+            st.markdown(f"**시작일:** `{start}`")
             if end:
-                st.write(f"**종료일:** {end}")
-            st.write(f"**종일 여부:** {'✅ 예' if all_day else '❌ 아니오'}")
-            st.info(f"**이벤트 설명:** {calendar_data.get("eventClick","이벤트클릭없음").get("event","이벤트없음").get("extendedProps","extendedProps없음").get("description","설명없음")}")
+                st.markdown(f"**종료일:** `{end}`")
+            st.markdown(f"**종일 여부:** `{'예' if all_day else '아니오'}`")
+            st.markdown(f"**설명:** `{description}`")
+            st.markdown(f"**캘린더 아이디:** `{calendar_id_print}`")
+            st.markdown(f"**캘린더 제목:** `{calendar_summary}`")
 
-            # 필요한 경우 여기에 더 많은 필드 출력 가능
-            # 예: event.get("description") 등
+            st.divider()
+
+            # 수정 모드 토글
+            with st.expander("✏️ 이벤트 수정"):
+                new_title = st.text_input("제목", value=title)
+                new_description = st.text_area("설명", value=description)
+                new_start = st.text_input("시작일", value=start)
+                new_end = st.text_input("종료일", value=end or "")
+                new_all_day = st.checkbox("종일 이벤트", value=all_day)
+
+                if st.button("✅ 수정 저장"):
+                    # 여기서 수정 요청 처리 함수 호출 필요 (예: update_calendar_event)
+                    st.success("수정된 이벤트 정보 저장 요청 완료 (예시)")
+                    # 실제 적용은 API 연동 함수로!
+
+            # 삭제 버튼
+            if st.button("🗑️ 이 이벤트 삭제"):
+                # 여기서 삭제 요청 처리 함수 호출 필요 (예: delete_calendar_event)
+                st.warning("이벤트 삭제 요청 완료 (예시)")
+                # 실제 삭제도 마찬가지로 API 연동 필요
+
 '''
 이벤트 예시
 {
@@ -122,7 +149,9 @@ def st_calendar():
             "start": "2025-05-21T18: 30: 00+09: 00",
             "end": "2025-05-21T19: 30: 00+09: 00",
             "extendedProps": {
-                "description": "이벤트 테스트1의 설명"
+                "description": "이벤트 테스트1의 설명",
+                "calendar_id": 캘린더의 id,
+                "calendar_summary" : 캘린더의 제목
             }
         },
         "view": {
