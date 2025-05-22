@@ -1,7 +1,8 @@
 from langchain.agents import AgentExecutor, ConversationalChatAgent, Tool
+from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, MessagesPlaceholder, HumanMessagePromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.tools import DuckDuckGoSearchRun
-from langchain.utilities import SerpAPIWrapper  # or GoogleSearchAPIWrapper if you prefer
+from langchain.utilities import SerpAPIWrapper
 from env_config import OPENAI_API_MODEL, OPENAI_API_TEMPERATURE, SERPAPI_API_KEY
 
 def init_agent_chain(memory):
@@ -25,19 +26,34 @@ def init_agent_chain(memory):
     search_tool = Tool.from_function(
         func=search_fallback,
         name="Search",
-        description=(
-            "Use this to answer general queries by searching the web. "
-            "First tries DuckDuckGo; if that fails, falls back to Google via SerpAPI."
-        ),
+        description=("웹에서 답을 찾아야 할 때 사용하세요. (DuckDuckGo실패 시 -> SerpAPI 폴백)"),
     )
 
-    tools = [search_tool]
+    # 5. 한국어 고정 system prompt
+    system_prompt = SystemMessagePromptTemplate.from_template(
+        "당신은 한국어로만 답변하는 AI 비서입니다. 절대로 영어로 답하지 마세요."
+    )
 
-    chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm, tools=tools)
+    # 6. 대화 히스토리, 사용자 입력 placeholder
+    human_prompt   = HumanMessagePromptTemplate.from_template("{input}")
+    history_prompt = MessagesPlaceholder(variable_name="chat_history")
+
+    # 7. PromptTemplate 조합
+    prompt = ChatPromptTemplate.from_messages([
+        system_prompt,
+        history_prompt,
+        human_prompt,
+    ])
+
+    chat_agent = ConversationalChatAgent.from_llm_and_tools(
+        llm=llm,
+        tools=[search_tool],
+        prompt=prompt,
+    )
 
     return AgentExecutor.from_agent_and_tools(
         agent=chat_agent,
-        tools=tools,
+        tools=[search_tool],
         memory=memory,
         return_intermediate_steps=True,
         handle_parsing_errors=True,
