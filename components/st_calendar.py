@@ -106,13 +106,13 @@ def st_calendar():
             event.get("extendedProps", {}).get("calendar_id", "아이디 없음")
         )
         calendar_summary=(
-            event.get("extendedProps", {}).get("calendar_summary", "캘린더 아이디 오류")
+            event.get("extendedProps", {}).get("calendar_summary", "구글 Tasks(수정불가)")
         )
         calendar_event_id=(
             event.get("extendedProps", {}).get("event_id", "이벤트 아이디 오류")
         )
 
-        if all_day:
+        if all_day and "end" in event: #구글 캘린더와 st캘린더의 출력방식 맞추기(테스크는 end가 없어서 제외)
             end_date = datetime.strptime(end, "%Y-%m-%d")  # 문자열 → datetime
             end_plus_one = end_date + timedelta(days=-1)        # -1 더하기
             end=end_plus_one.strftime("%Y-%m-%d")  # 다시 문자열로 저장
@@ -154,7 +154,7 @@ def st_calendar():
                             return datetime.fromisoformat(dt_str)
                         except:
                             return default_dt
-
+                
                     default_start_dt = parse_dt(start, datetime.now().replace(hour=9, minute=0))
                     default_end_dt = parse_dt(end, datetime.now().replace(hour=10, minute=0))
 
