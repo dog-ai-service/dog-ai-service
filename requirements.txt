@@ -1,3 +1,7 @@
+#   pip install -r requirements.txt
+
+
+
 streamlit
 streamlit-chat
 langchainhub
@@ -12,10 +16,16 @@ python-dotenv
 # 캘린더
 streamlit_calendar
 
-#로그인 관련
+# 로그인 관련
 streamlit-oauth
 
-#구글 권한 관련
+# 구글 권한 관련
 google-api-python-client
 google-auth
 google-auth-oauthlib
+
+# 번역 라이브러리 
+deep-translator
+
+# pdf 생성 라이브러리
+aspose-pdf 
