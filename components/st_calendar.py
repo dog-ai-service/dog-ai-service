@@ -112,18 +112,23 @@ def st_calendar():
             event.get("extendedProps", {}).get("event_id", "이벤트 아이디 오류")
         )
 
+        if all_day:
+            end_date = datetime.strptime(end, "%Y-%m-%d")  # 문자열 → datetime
+            end_plus_one = end_date + timedelta(days=-1)        # -1 더하기
+            end=end_plus_one.strftime("%Y-%m-%d")  # 다시 문자열로 저장
+        
         st.markdown("### 📌 선택한 이벤트")
         if "box" in st.session_state:
             st.write(st.session_state.box)
         with st.container(border=True):
-            st.markdown(f"**제목:** `{title}`")
-            st.markdown(f"**시작일:** `{start}`")
+            st.markdown(f"**제목:** {title}")
+            st.markdown(f"**시작일:** {start}")
             if end:
-                st.markdown(f"**종료일:** `{end}`")
-            st.markdown(f"**종일 여부:** `{'예' if all_day else '아니오'}`")
-            st.markdown(f"**설명:** `{description}`")
+                st.markdown(f"**종료일:**  {end}")
+            st.markdown(f"**종일 여부:**  {'예' if all_day else '아니오'}")
+            st.markdown(f"**설명:**  {description}")
             #st.markdown(f"**캘린더 아이디:** `{calendar_id_print}`")
-            st.markdown(f"**캘린더 제목:** `{calendar_summary}`")
+            st.markdown(f"**캘린더 위치:**  {calendar_summary}")
             #st.markdown(f"**이벤트 아이디:** `{calendar_event_id}`")
 
             st.divider()

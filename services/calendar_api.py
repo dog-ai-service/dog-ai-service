@@ -65,7 +65,9 @@ def get_calendar_events(calendar_id):
             event_data["end"] = end[:16] if end else start[:16]
             event_data["allDay"] = False
         else:
-            event_data["end"]=end
+            end_date = datetime.strptime(end, "%Y-%m-%d")  # 문자열 → datetime
+            end_plus_one = end_date + timedelta(days=0)        # 0 더하기
+            event_data["end"] = end_plus_one.strftime("%Y-%m-%d")  # 다시 문자열로 저장
             event_data["allDay"] = True
 
         calendar_events.append(event_data)
