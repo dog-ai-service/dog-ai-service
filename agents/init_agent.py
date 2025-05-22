@@ -21,7 +21,7 @@ def init_agent_chain(memory):
             # DuckDuckGo 에러 시 SerpAPI로 재시도
             return serp.run(query)
 
-    # ④ LangChain Tool로 래핑
+    # 4. LangChain Tool로 래핑
     search_tool = Tool.from_function(
         func=search_fallback,
         name="Search",
