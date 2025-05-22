@@ -5,9 +5,11 @@ from streamlit_oauth import OAuth2Component
 # 로그인 토큰 해석
 import jwt
 # 환경변수
-from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, COOKIE_SECRET
+from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+from config import REDIRECT_URI
 from services.drive_api import read_json_list_by_name, upload_json_list_to_drive, _convert_dates
 import time
+import json
 
 # 설정 : 1. openai만 사용, 2. 랭체인 에이전트를 이용 검색증강, 3. 더미
 ai_res_type = 2
@@ -40,7 +42,7 @@ def login_api():
         token = oauth2.authorize_button(
             name="Google로 시작하기\n클릭",
             icon="",
-            redirect_uri="http://localhost:8080", # 여기 나중에 로컬 아닌 버전으로 수정해야함
+            redirect_uri=REDIRECT_URI, # 여기 나중에 로컬 아닌 버전으로 수정해야함
             scope="openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/tasks https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets"
         )
         if token:
