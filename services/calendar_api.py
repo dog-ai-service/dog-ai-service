@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 
 # calendar_id의 캘린더 이벤트를 리스트(딕셔너리) 형태로 반환 / 미로그인시 []로 널값 반환
-def get_calendar_events(calendar_id):
+def get_lgh_calendar_events(calendar_id='lyg94050@gmail.com'):
     creds = make_creds("calendar")
     
     # 미로그인시 [] 반환
@@ -31,9 +31,9 @@ def get_calendar_events(calendar_id):
     # 캘린더에서 대충 최신 이벤트 50개 가져오기
     events_result = service.events().list(
         calendarId=calendar_id,
-        timeMin=time_min,
-        timeMax=time_max,
-        maxResults=MAX_RESULTS,
+        timeMin="2020-01-01T00:00:00Z",
+        timeMax="2030-01-01T00:00:00Z",
+        maxResults=500,#여기가 로드 값
         singleEvents=True,
         orderBy="startTime"
     ).execute()
@@ -142,7 +142,7 @@ def get_calendar_events(calendar_id):
 
 
 # calendar_id의 캘린더 이벤트를 삭제 
-def del_calendar_events(event_id, calendar_id='primary'):
+def del_lgh_calendar_events(event_id, calendar_id='lyg94050@gmail.com'):
     creds = make_creds("calendar")
     
     # 미로그인시 반환
