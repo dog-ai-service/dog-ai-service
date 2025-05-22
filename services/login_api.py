@@ -47,17 +47,23 @@ def login_api():
         if not st.session_state.get("initialized", False):
             st.session_state.dogs = read_json_list_by_name(folder_name="dog_ai_service", filename="dogs_info.json")
             st.session_state.schedules = read_json_list_by_name(folder_name="dog_ai_service", filename="schedules.json")
+            st.session_state.chat_history = read_json_list_by_name(folder_name="dog_ai_service", filename="chat_history.json")
+            st.session_state.created_events = read_json_list_by_name(folder_name="dog_ai_service", filename="created_events.json")
             st.session_state.initialized = True
-            st.success("Drive에서 데이터를 불러왔습니다.")
+            st.success("✅ Drive 동기화 완료")
         
         if st.button("로그아웃"):
             upload_json_list_to_drive(_convert_dates(st.session_state.get("dogs", [])), "dogs_info.json")
             upload_json_list_to_drive(_convert_dates(st.session_state.get("schedules", [])), "schedules.json")
+            upload_json_list_to_drive(_convert_dates(st.session_state.get("chat_history", [])), "chat_history.json")
+            upload_json_list_to_drive(_convert_dates(st.session_state.get("created_events", [])), "created_events.json")
             # 세션 상태 비우기
-            for key in ["dogs", "schedules", "created_events", "initialized", "token"]:
+            for key in ["dogs", "schedules", "created_events", "initialized", "token", "chat_history", "created_events"]:
                 st.session_state.pop(key, None)
             st.rerun()
         if st.button("구글드라이브 연동 확인"):
             print("강아지 데이터 확인 : ", st.session_state.dogs)
             print("스케줄 데이터 확인 : ", st.session_state.schedules)
+            print("캘린더 데이터 확인 : ", st.session_state.created_events)
+            print("대화 내역 확인    : ", st.session_state.chat_history)
 
