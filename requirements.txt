@@ -24,4 +24,7 @@ google-auth-oauthlib
 deep-translator
 
 # pdf 생성 라이브러리
-aspose-pdf 
+aspose-pdf
+
+# SerpAPI
+google-search-results
