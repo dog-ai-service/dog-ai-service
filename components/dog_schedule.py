@@ -5,6 +5,7 @@ from datetime import date
 from env_config import OPENAI_API_MODEL, OPENAI_API_TEMPERATURE, OPENAI_API_KEY
 from services.calendar_api import get_calendar_service
 from components.schedule_to_calendar import update_calendar_from_schedules
+from components.retrieve_guidelines import retrieve_guidelines
 
 # 오늘 날짜 (ISO-8601)
 today = date.today().isoformat()
@@ -12,106 +13,68 @@ today = date.today().isoformat()
 # OpenAI 클라이언트
 client = OpenAI(api_key=OPENAI_API_KEY)
 
-SYSTEM_PROMPT = f"""
-당신은 반려견 케어 스케줄 어시스턴트입니다. 오늘 날짜: {today}.
-입력: JSON dogs 배열 — 각 요소: name, breed, birth, de_sex, weight, note
-출력: JSON 배열 예시 —
-[
-  {{
-    name,
-    schedule: [
-      {{
-        type,             # feeding, walking, bathing, grooming, heartworm_prevention, internal_parasite, vaccination
-        subtype?,         # (vaccination만) DHPPL, rabies, corona, kennel_cough
-        period,           # 다음 반복까지 ISO 8601 기간
-        duration?,        # 활동 소요 ISO 8601 기간
-        count?,           # 반복 횟수 (feeding, walking만)
-        detail?,          # 추가 메모
-        next              # ISO 8601 타임스탬프 리스트
-      }}
+# 스케줄 생성 모듈
+def fetch_personalized_schedule(dogs, rag_contexts):
+    """
+    dogs: [{…}, …]
+    rag_contexts: { topic: "…", … }
+    """
+    results = []
+    today = date.today().isoformat()
+
+    # 사전 정의
+    TOPICS = [
+        "feeding",
+        "walking",
+        "bathing",
+        "grooming",
+        "heartworm_prevention",
+        "internal_parasite",
+        "vaccination",
     ]
-  }}
-]
 
-규칙:
-- feeding: period=P1D
-  • 소·중형(≤25kg): count=2, duration=PT15M  
-    → next 시각: **하루 2회**, 보통 **08:00**과 **20:00**에 설정  
-  • 대형(>25kg):     count=2, duration=PT30M  
-    → next 시각: **07:00**, **19:00**  
-  • 비만 or note “급하게 먹음”: duration=PT20M, count+=1  
-    → 아침(08:00), 점심(12:00), 저녁(20:00) 등 적절히 배분  
-- walking: period=P1D
-  • 소·중형: count=2, duration=PT20M  
-    → next 시각: **10:00**과 **18:00**  
-  • 대형:     count=1,  duration=PT60M  
-    → 다음 산책 시각: **17:00**  
-  • 과체중: count+=1; 관절문제→duration=PT10M  
-    → 추가 산책은 **15:00** 등  
-- bathing: period=P14D  (건조→P21D(저자극 샴푸권장), 지성→P7D)  
-  → 주말 오전(10:00) 또는 주말 저녁(18:00)  
-- grooming: period=P60D  
-  → 평일 18:00  
-- heartworm_prevention: period=P1M  
-  → 주말 오후(14:00)  
-- internal_parasite:
-  • 생후 ≤6개월: period=P1M  
-    → 주말 오후(14:00)  
-  • 이후:         period=P3M
-- vaccination: 다음 네 개 항목을 각각 schedule에 모두 포함할 것:
-  - {{type: "vaccination", subtype:"DHPPL", period:"P1Y"}}
-  - {{type: "vaccination", subtype:"rabies", period:"P1Y"}}
-  - {{type: "vaccination", subtype:"corona", period:"P1Y"}}
-  - {{type: "vaccination", subtype:"kennel_cough", period:"P1Y"}}
-• 각각의 next:
-  - “올해 생일 월”의 주말 오후(14:00)에 설정  
-  - (만약 오늘이 생일 월을 지났으면 내년 생일 월 사용)
-- 필드 해설:
-  period=다음 간격, duration=소요 시간,  
-  next=예정 시각 리스트(feeding/walking은 위 지정 시간, 그 외는 평일 퇴근 후·주말 오후 시간대),  
-  detail=특이사항 기입(저자극 샴푸권장 등)  
-반환: 오직 JSON — 부가 설명 금지
-"""
+    for dog in dogs:
+        partials = []
+        for topic in TOPICS:
+            system_prompt = f"""
+            You are a professional canine care scheduling assistant.
+            Today is {today}.
+            Generate only one JSON object for the '{topic}' schedule for the following dog.
+            Use the RAG context below to ensure accuracy.
 
+            RAG CONTEXT for {topic}:
+            {rag_contexts[topic]}
 
+            Dog data: {json.dumps(dog, ensure_ascii=False)}
 
-def fetch_personalized_schedule(dogs):
-    system_msg = {"role":"system","content":SYSTEM_PROMPT}
-    user_msg   = {"role":"user","content":json.dumps(
-        {"dogs":[
-            {k: (v.isoformat() if hasattr(v, "isoformat") else v)
-             for k,v in {
-                "name":   d["name"],
-                "breed":  d["breed"],
-                "birth":  d["birth"],
-                "de_sex": d["de_sex"],
-                "weight": d["weight"],
-                "note":   d["note"],
-            }.items()}
-            for d in dogs
-        ]}, ensure_ascii=False
-    )}
-    resp = client.chat.completions.create(
-        model=OPENAI_API_MODEL,
-        messages=[system_msg, user_msg],
-        temperature=0.2
-    )
-    raw = resp.choices[0].message.content or ""
-    
-    # 1) 응답이 비어있는지 체크
-    if not raw.strip():
-        st.error("모델 응답이 비어있습니다.")
-        return []
-    
-    # 2) 디버그용 전체 응답 출력
-    st.text_area("🔍 모델 원본 응답", raw, height=200)
+            Return a JSON object with exactly these keys:
+            - type: string
+            - period: ISO 8601 interval
+            - duration (optional)
+            - count (optional)
+            - next: list of ISO 8601 timestamps
+            - detail: string (in Korean)
 
-    # 3) JSON 파싱 시도
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError as e:
-        st.error(f"JSON 파싱 오류: {e}")
-        return []
+            Return _only_ the JSON object.
+            """.strip()
+
+            resp = client.chat.completions.create(
+                model=OPENAI_API_MODEL,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": ""},  
+                ],
+                temperature=0.2,
+            )
+            item = json.loads(resp.choices[0].message.content)
+            partials.append(item)
+
+        results.append({
+            "name": dog["name"],
+            "schedule": partials
+        })
+
+    return results
 
 # Streamlit 버튼 핸들러
 def dog_scheduling():
@@ -129,13 +92,17 @@ def dog_scheduling():
         if not dogs:
             st.warning("먼저 강아지를 등록해주세요.")
             return
-        
+        # RAG 컨텍스트 생성
+        rag_contexts = {
+            topic: "\n\n".join(retrieve_guidelines(topic, top_k=3))
+            for topic in ["feeding", "walking", "bathing", "grooming", "heartworm_prevention", "internal_parasite", "vaccination"]
+        }
         # 1) 이전 스케줄 보관
         old_schedules = st.session_state.get("schedules", [])
 
         # 2) LLM 호출
         with st.spinner("생성 중…"):
-            new_schedules = fetch_personalized_schedule(dogs)
+            new_schedules = fetch_personalized_schedule(dogs, rag_contexts)
 
         # 3) 이전 next 값 재활용 로직
         # old_schedules/new_schedules 는 [{ "name":…, "schedule":[…] }, …] 구조
