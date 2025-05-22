@@ -74,16 +74,16 @@ def fetch_personalized_schedule(dogs, rag_contexts):
             )
 
             raw = resp.choices[0].message.content or ""
-            st.text_area("🔍 Raw Response", raw, height=200)
+            # st.text_area("🔍 Raw Response", raw, height=200)
             if not raw.strip():
-                st.error(f"[{dog['name']}/{topic}] 모델 응답이 비어있습니다.")
+                # st.error(f"[{dog['name']}/{topic}] 모델 응답이 비어있습니다.")
                 continue
 
             clean = strip_codeblock(raw)
             try:
                 item = json.loads(clean)
             except json.JSONDecodeError as e:
-                st.error(f"[{dog['name']}/{topic}] JSON 파싱 오류: {e}")
+                # st.error(f"[{dog['name']}/{topic}] JSON 파싱 오류: {e}")
                 continue
 
             partials.append(item)
@@ -141,8 +141,8 @@ def dog_scheduling():
             update_calendar_from_schedules(st.session_state.schedules, service)
             st.success("캘린더가 동기화되었습니다.")
 
-    st.subheader("🗓️ 현재 스케줄")
-    if not st.session_state.schedules:
-        st.info("아직 생성된 스케줄이 없습니다.")
-    else:
-        st.json(st.session_state.schedules)
+    # st.subheader("🗓️ 현재 스케줄")
+    # if not st.session_state.schedules:
+    #     st.info("아직 생성된 스케줄이 없습니다.")
+    # else:
+    #     st.json(st.session_state.schedules)

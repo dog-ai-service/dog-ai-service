@@ -176,7 +176,7 @@ def sheet_delete():
 def upload_json_list_to_drive(json_list: list, filename: str = "강아지리스트.json"):
     creds = make_creds("drive")
     if not creds:
-        st.error("❌ 인증되지 않았습니다.")
+        # st.error("❌ 인증되지 않았습니다.")
         return None
 
     drive_service = build("drive", "v3", credentials=creds)
@@ -192,7 +192,7 @@ def upload_json_list_to_drive(json_list: list, filename: str = "강아지리스�
 
     if files:
         file_id = files[0]['id']
-        st.info(f"📄 기존 파일 '{filename}'이(가) 이미 존재합니다. 덮어씁니다.")
+        # st.info(f"📄 기존 파일 '{filename}'이(가) 이미 존재합니다. 덮어씁니다.")
 
         # 기존 파일 덮어쓰기 (PATCH)
         upload_url = f"https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=media"
@@ -201,9 +201,10 @@ def upload_json_list_to_drive(json_list: list, filename: str = "강아지리스�
         response = requests.patch(upload_url, headers=upload_headers, data=json.dumps(json_list, ensure_ascii=False))
 
         if response.status_code in (200, 201):
-            st.success(f"✅ 파일이 덮어써졌습니다. 파일 ID: {file_id}")
+            # st.success(f"✅ 파일이 덮어써졌습니다. 파일 ID: {file_id}")
+            pass
         else:
-            st.error(f"❌ 덮어쓰기 실패: {response.text}")
+            # st.error(f"❌ 덮어쓰기 실패: {response.text}")
             return None
 
     else:
@@ -221,9 +222,9 @@ def upload_json_list_to_drive(json_list: list, filename: str = "강아지리스�
 
         if response.status_code in (200, 201):
             file_id = response.json().get("id")
-            st.success(f"✅ 새 파일이 업로드되었습니다. 파일 ID: {file_id}")
+            # st.success(f"✅ 새 파일이 업로드되었습니다. 파일 ID: {file_id}")
         else:
-            st.error(f"❌ 업로드 실패: {response.text}")
+            # st.error(f"❌ 업로드 실패: {response.text}")
             return None
 
     # ✅ 폴더로 이동
@@ -239,9 +240,10 @@ def upload_json_list_to_drive(json_list: list, filename: str = "강아지리스�
             fields='id, parents'
         ).execute()
 
-        st.info(f"📂 '{filename}' 파일이 폴더로 이동되었습니다.")
+        # st.info(f"📂 '{filename}' 파일이 폴더로 이동되었습니다.")
     except Exception as e:
-        st.error(f"📁 폴더 이동 오류: {e}")
+        # st.error(f"📁 폴더 이동 오류: {e}")
+        pass
 
     return file_id
     
@@ -249,7 +251,7 @@ def upload_json_list_to_drive(json_list: list, filename: str = "강아지리스�
 def read_json_list_by_name(folder_name="dog_ai_service", filename="강아지리스트.json"):
     creds = make_creds("drive")
     if not creds:
-        st.error("❌ 인증되지 않았습니다.")
+        # st.error("❌ 인증되지 않았습니다.")
         return []
 
     service = build("drive", "v3", credentials=creds)
@@ -264,7 +266,7 @@ def read_json_list_by_name(folder_name="dog_ai_service", filename="강아지리�
     folders = folder_response.get('files', [])
 
     if not folders:
-        st.error(f"❌ '{folder_name}' 폴더를 찾을 수 없습니다.")
+        # st.error(f"❌ '{folder_name}' 폴더를 찾을 수 없습니다.")
         return []
 
     folder_id = folders[0]['id']
@@ -279,11 +281,11 @@ def read_json_list_by_name(folder_name="dog_ai_service", filename="강아지리�
     files = file_response.get('files', [])
 
     if not files:
-        st.info(f"ℹ️ '{filename}' 파일이 '{folder_name}' 폴더 안에 없습니다.")
+        # st.info(f"ℹ️ '{filename}' 파일이 '{folder_name}' 폴더 안에 없습니다.")
         return []
 
     file_id = files[0]['id']
-    st.info(f"🔍 '{filename}' 파일 발견, ID: {file_id}")
+    # st.info(f"🔍 '{filename}' 파일 발견, ID: {file_id}")
 
     # 3. 파일 내용 다운로드 및 JSON 파싱
     access_token = creds.token
@@ -297,13 +299,13 @@ def read_json_list_by_name(folder_name="dog_ai_service", filename="강아지리�
             if isinstance(json_data, list):
                 return json_data
             else:
-                st.warning("⚠️ JSON 내용이 리스트가 아닙니다.")
+                # st.warning("⚠️ JSON 내용이 리스트가 아닙니다.")
                 return []
         except json.JSONDecodeError:
-            st.error("❌ JSON 디코딩 실패")
+            # st.error("❌ JSON 디코딩 실패")
             return []
     else:
-        st.error(f"❌ 다운로드 실패: {response.status_code} - {response.text}")
+        # st.error(f"❌ 다운로드 실패: {response.status_code} - {response.text}")
         return []
     
 def _convert_dates(obj):
