@@ -196,13 +196,12 @@ def st_calendar():
                         allDay=new_all_day,
                         calendar_id=calendar_id_print
                     )
-                    st.rerun()
 
             # 삭제 확인 후 실행
             if st.button("🗑️ 이 이벤트 삭제"):
                 del_calendar_events(calendar_event_id, calendar_id_print)
-                if st.button("화면 갱신"):
-                    st.rerun()
+            if st.button("화면 갱신"):
+                st.rerun()
 
 
 
