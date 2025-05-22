@@ -82,4 +82,3 @@ def login_api():
         #     print("캘린더 데이터 확인 : ", st.session_state.created_events)
         #     print("대화내역 확인     : ", st.session_state.chat_history)
         #     print("증상 대화내역 확인 : ", st.session_state.symptom_chat_history)
-

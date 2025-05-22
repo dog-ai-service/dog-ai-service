@@ -28,7 +28,7 @@ def create_folder():
     files = response.get('files', [])
 
     if files:
-        st.info(f"📁 기존 폴더 '{folder_name}' 사용")
+        # st.info(f"📁 기존 폴더 '{folder_name}' 사용")
         return files[0]['id']
     else:
         file_metadata = {
@@ -37,7 +37,7 @@ def create_folder():
             'parents': ['root']  # 명시적으로 루트에 생성
         }
         folder = service.files().create(body=file_metadata, fields='id').execute()
-        st.success(f"✅ 폴더 '{folder_name}' 생성 완료")
+        # st.success(f"✅ 폴더 '{folder_name}' 생성 완료")
         return folder.get('id')
 
 # 시트 생성하고 시트의 id값 반환 / 실패시 None 반환
@@ -64,7 +64,7 @@ def sheet_create():
     files = response.get('files', [])
 #
     if files:
-        st.info(f"기존 파일 '{title}' 사용")
+        # st.info(f"기존 파일 '{title}' 사용")
         spreadsheet_id=files[0]['id']
         return spreadsheet_id
     else:
@@ -90,7 +90,7 @@ def sheet_create():
         fields='id, parents'
     ).execute()
 
-    st.info(f"'{folder_name}' 폴더로 이동됨")
+    # st.info(f"'{folder_name}' 폴더로 이동됨")
 
 
     return spreadsheet_id
