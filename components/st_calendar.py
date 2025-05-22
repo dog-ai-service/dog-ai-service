@@ -156,14 +156,14 @@ def st_calendar():
                     start_date = st.date_input("📅 시작 날짜", value=default_start_dt.date())
                     end_date = st.date_input("📅 종료 날짜", value=default_end_dt.date())
 
-                    st.markdown("### ⏰ 시작 시간")
+                    st.markdown("⏰ 시작 시간")
                     col1, col2 = st.columns(2)
                     with col1:
                         start_hour = st.selectbox("시", list(range(0, 24)), index=default_start_dt.hour)
                     with col2:
                         start_minute = st.selectbox("분", list(range(0, 60)), index=default_start_dt.minute)
 
-                    st.markdown("### ⏰ 종료 시간")
+                    st.markdown("⏰ 종료 시간")
                     col3, col4 = st.columns(2)
                     with col3:
                         end_hour = st.selectbox("시 ", list(range(0, 24)), index=default_end_dt.hour)
@@ -196,11 +196,11 @@ def st_calendar():
                         allDay=new_all_day,
                         calendar_id=calendar_id_print
                     )
-                    st.rerun()
 
             # 삭제 확인 후 실행
             if st.button("🗑️ 이 이벤트 삭제"):
                 del_calendar_events(calendar_event_id, calendar_id_print)
+            if st.button("화면 갱신"):
                 st.rerun()
 
 
