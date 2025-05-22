@@ -28,6 +28,6 @@ if st.session_state.symptom_chatbot:
      placeholder="선택해주세요",
     )
     if name:
-        symptom_chatbot()
+        symptom_chatbot(name)
 else:
     prompt_box()
