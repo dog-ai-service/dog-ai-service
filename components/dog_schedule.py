@@ -1,5 +1,7 @@
 import streamlit as st
 import json
+import re
+import textwrap
 from openai import OpenAI
 from datetime import date
 from env_config import OPENAI_API_MODEL, OPENAI_API_TEMPERATURE, OPENAI_API_KEY
@@ -13,66 +15,80 @@ today = date.today().isoformat()
 # OpenAI 클라이언트
 client = OpenAI(api_key=OPENAI_API_KEY)
 
+# 강아지 데이터 전처리
+def make_serializable(d: dict) -> dict:
+    return {k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in d.items()}
+
+# 코드블록 제거 및 JSON 추출
+def strip_codeblock(s: str) -> str:
+    text = re.sub(r"```(?:json)?\s*([\s\S]*?)```", r"\1", s).strip()
+    m = re.search(r"(\[.*\]|\{.*\})", text, flags=re.DOTALL)
+    return m.group(1) if m else text
+
 # 스케줄 생성 모듈
 def fetch_personalized_schedule(dogs, rag_contexts):
-    """
-    dogs: [{…}, …]
-    rag_contexts: { topic: "…", … }
-    """
     results = []
-    today = date.today().isoformat()
+    today_iso = date.today().isoformat()
 
-    # 사전 정의
     TOPICS = [
-        "feeding",
-        "walking",
-        "bathing",
-        "grooming",
-        "heartworm_prevention",
-        "internal_parasite",
-        "vaccination",
+        "feeding", "walking", "bathing", "grooming",
+        "internal_parasite", "vaccination",
     ]
 
     for dog in dogs:
         partials = []
+        dog_for_prompt = make_serializable(dog)
+
         for topic in TOPICS:
-            system_prompt = f"""
-            You are a professional canine care scheduling assistant.
-            Today is {today}.
-            Generate only one JSON object for the '{topic}' schedule for the following dog.
-            Use the RAG context below to ensure accuracy.
+            system_prompt = textwrap.dedent(f"""
+                You are a professional canine care scheduling assistant.
+                Today is {today_iso}.
+                Generate only one JSON object for the '{topic}' schedule for the following dog.
+                Use the RAG context below to ensure accuracy.
 
-            RAG CONTEXT for {topic}:
-            {rag_contexts[topic]}
+                RAG CONTEXT for {topic}:
+                {rag_contexts[topic]}
 
-            Dog data: {json.dumps(dog, ensure_ascii=False)}
+                Dog data: {json.dumps(dog_for_prompt, ensure_ascii=False, default=lambda o: o.isoformat() if hasattr(o, 'isoformat') else str(o))}
 
-            Return a JSON object with exactly these keys:
-            - type: string
-            - period: ISO 8601 interval
-            - duration (optional)
-            - count (optional)
-            - next: list of ISO 8601 timestamps
-            - detail: string (in Korean)
+                Return a JSON object with exactly these keys:
+                - type: string, {topic}
+                - period: ISO 8601 interval (e.g. P1D(once a day), P14D(once every 14 days), P1M(once a month), P1Y(once a year), ...). Do NOT use date ranges here.
+                - next:
+                  • If period == P1D (daily topics: feeding, walking), then list every timestamp **within the next day**.
+                  • If type == "vaccination": extract the birth month and day from Dog data["birth"], then format next as an ISO 8601 timestamp “YYYY-MM-DDT00:00:00Z” using the current year if that date is on or after Today, otherwise use the same month/day in the next year.
+                  • Otherwise (period is P1M or longer), list exactly **one** ISO 8601 timestamp (the very next occurrence).
+                - detail: Korean description string.
 
-            Return _only_ the JSON object.
-            """.strip()
+                Only output the raw JSON object—no surrounding text or markdown.
+                Return only the JSON object without any explanation.
+            """).strip()
 
             resp = client.chat.completions.create(
                 model=OPENAI_API_MODEL,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": ""},  
+                    {"role": "user", "content": ""},
                 ],
                 temperature=0.2,
             )
-            item = json.loads(resp.choices[0].message.content)
+
+            raw = resp.choices[0].message.content or ""
+            st.text_area("🔍 Raw Response", raw, height=200)
+            if not raw.strip():
+                st.error(f"[{dog['name']}/{topic}] 모델 응답이 비어있습니다.")
+                continue
+
+            clean = strip_codeblock(raw)
+            try:
+                item = json.loads(clean)
+            except json.JSONDecodeError as e:
+                st.error(f"[{dog['name']}/{topic}] JSON 파싱 오류: {e}")
+                continue
+
             partials.append(item)
 
-        results.append({
-            "name": dog["name"],
-            "schedule": partials
-        })
+        results.append({"name": dog["name"], "schedule": partials})
 
     return results
 
@@ -80,8 +96,8 @@ def fetch_personalized_schedule(dogs, rag_contexts):
 def dog_scheduling():
     service = get_calendar_service()
     if not service:
-        return  # 서비스 생성 실패 시 중단
-    # 세션 초기화
+        return
+
     if "schedules" not in st.session_state:
         st.session_state.schedules = []
     if "created_events" not in st.session_state:
@@ -92,42 +108,32 @@ def dog_scheduling():
         if not dogs:
             st.warning("먼저 강아지를 등록해주세요.")
             return
-        # RAG 컨텍스트 생성
-        rag_contexts = {
-            topic: "\n\n".join(retrieve_guidelines(topic, top_k=3))
-            for topic in ["feeding", "walking", "bathing", "grooming", "heartworm_prevention", "internal_parasite", "vaccination"]
-        }
-        # 1) 이전 스케줄 보관
-        old_schedules = st.session_state.get("schedules", [])
 
-        # 2) LLM 호출
+        # RAG 컨텍스트 준비
+        rag_contexts = {topic: "\n\n".join(retrieve_guidelines(topic, top_k=2))
+                        for topic in ["feeding", "walking", "bathing", "grooming", 
+                                      "heartworm_prevention", "internal_parasite", "vaccination"]}
+
+        old_schedules = st.session_state.schedules
         with st.spinner("생성 중…"):
             new_schedules = fetch_personalized_schedule(dogs, rag_contexts)
 
-        # 3) 이전 next 값 재활용 로직
-        # old_schedules/new_schedules 는 [{ "name":…, "schedule":[…] }, …] 구조
-        # 각 항목을 dog 이름 + schedule 타입(key) 으로 매핑해 두면 빠릅니다.
+        # 이전 next 재활용
         old_map = {}
-        for dog in old_schedules:
-            for item in dog["schedule"]:
-                key = dog["name"] + ":" + item["type"] + item.get("subtype", "")
-                old_map[key] = item
+        for d in old_schedules:
+            for itm in d.get("schedule", []):
+                key = d["name"] + ":" + itm.get("type", "") + itm.get("subtype", "")
+                old_map[key] = itm
 
-        # 병합
-        for dog in new_schedules:
-            for item in dog["schedule"]:
-                key = dog["name"] + ":" + item["type"] + item.get("subtype", "")
-                old_item = old_map.get(key)
-                # period 동일 → next 재활용
-                if old_item and old_item.get("period") == item.get("period"):
-                    item["next"] = old_item["next"]
+        for d in new_schedules:
+            for itm in d.get("schedule", []):
+                key = d["name"] + ":" + itm.get("type", "") + itm.get("subtype", "")
+                old = old_map.get(key)
+                if old and old.get("period") == itm.get("period"):
+                    itm["next"] = old["next"]
 
-        # 4) 재활용 후 최종 저장
         st.session_state.schedules = new_schedules
-        # print(f"스케줄 타입: {type(st.session_state.schedules)}")
-        # print(f"스케줄 내용: {st.session_state.schedules}")
 
-    # 2️⃣ 캘린더 동기화
     if st.button("2️⃣ 캘린더 업데이트"):
         if not st.session_state.schedules:
             st.error("먼저 스케줄을 생성해주세요.")
@@ -135,10 +141,8 @@ def dog_scheduling():
             update_calendar_from_schedules(st.session_state.schedules, service)
             st.success("캘린더가 동기화되었습니다.")
 
-    # 스케줄 출력
     st.subheader("🗓️ 현재 스케줄")
-    schedules = st.session_state.get("schedules", [])
-    if not schedules:
+    if not st.session_state.schedules:
         st.info("아직 생성된 스케줄이 없습니다.")
     else:
-        st.json(schedules)
+        st.json(st.session_state.schedules)

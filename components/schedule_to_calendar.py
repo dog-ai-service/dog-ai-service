@@ -57,15 +57,8 @@ TYPE_KOR = {
     "walking": "🐕 산책",
     "bathing": "🛁 목욕",
     "grooming": "✂️ 미용",
-    "heartworm_prevention": "💊 심장사상충",
     "internal_parasite": "💊 내부기생충",
     "vaccination": "💉 예방접종",
-}
-SUBTYPE_KOR = {
-    "DHPPL":          "종합예방주사",
-    "rabies":         "광견병",
-    "corona":         "코로나장염",
-    "kennel_cough":   "켄넬콕스",
 }
 
 def make_summary(dog_name: str, item: dict) -> str:
@@ -107,7 +100,7 @@ def update_calendar_from_schedules(schedules: list, service):
                     start_iso = ev["start"].get("dateTime")
                     if not start_iso:
                         continue
-                    key = f"{dog['name']}:{item['type']}{item.get('subtype','')}:{start_iso}"
+                    key = f"{dog['name']}:{item['type']}:{start_iso}"
                     st.session_state.created_events[key] = ev["id"]
         st.session_state.created_events_loaded = True
 
@@ -127,7 +120,7 @@ def update_calendar_from_schedules(schedules: list, service):
             # 2) 갱신된 next들을 캘린더에 푸시
             for idx, nxt in enumerate(item["next"]):
                 # key에 idx 추가
-                key = f"{dog['name']}:{item['type']}{item.get('subtype','')}:{idx}"
+                key = f"{dog['name']}:{item['type']}:{idx}"
                 start = nxt
                 end   = calculate_end(start, item.get("duration"))
                 body = {
