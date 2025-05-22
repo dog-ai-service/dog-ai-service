@@ -10,12 +10,9 @@ from env_config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, COOKIE_SECRET
 # 설정 : 1. openai만 사용, 2. 랭체인 에이전트를 이용 검색증강, 3. 더미
 ai_res_type = 2
 
-GOOGLE_CLIENT_ID="너 클라아이디"
-GOOGLE_CLIENT_SECRET="너 클라 비번"
-
 def login_api():
-    client_id=GOOGLE_CLIENT_ID#너 클라이언트 아이디 넣어
-    client_secret=GOOGLE_CLIENT_SECRET#너 클라이언트 비번 넣어
+    client_id=GOOGLE_CLIENT_ID
+    client_secret=GOOGLE_CLIENT_SECRET
 
     oauth2 = OAuth2Component(
         client_id=client_id,
