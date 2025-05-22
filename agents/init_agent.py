@@ -7,13 +7,13 @@ from env_config import OPENAI_API_MODEL, OPENAI_API_TEMPERATURE, SERPAPI_API_KEY
 def init_agent_chain(memory):
     llm = ChatOpenAI(model_name=OPENAI_API_MODEL, temperature=OPENAI_API_TEMPERATURE, streaming=True)
 
-    # ① 원래 DuckDuckGo 도구
+    # 1. DuckDuckGo
     duck = DuckDuckGoSearchRun(name="DuckDuckGo")
 
-    # ② SerpAPI (Google Search) 도구
+    # 2. SerpAPI (Google Search)
     serp = SerpAPIWrapper(serpapi_api_key=SERPAPI_API_KEY)
 
-    # ③ 둘을 묶어, DuckDuckGo가 실패하면 SerpAPI(=Google)로 폴백하는 단일 Search 함수
+    # 3. DuckDuckGo가 실패하면 SerpAPI(=Google)로 폴백하는 단일 Search 함수
     def search_fallback(query: str) -> str:
         try:
             return duck.run(query)
