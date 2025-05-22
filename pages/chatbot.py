@@ -15,6 +15,16 @@ st.title("💬 강아지 증상 전문 챗봇")
 # 최대한 오른쪽에 배치
 st.toggle("증상 챗봇 활성화", value=False, key="symptom_chatbot")
 if st.session_state.symptom_chatbot:
-    symptom_chatbot()
+    names = []
+    for item in st.session_state.dogs:
+        names.append(item['name'])
+    name = st.selectbox(
+     '어떤 강아지의 증상인가요?',
+     names,
+     index=None,
+     placeholder="선택해주세요",
+    )
+    if name:
+        symptom_chatbot()
 else:
     prompt_box()
