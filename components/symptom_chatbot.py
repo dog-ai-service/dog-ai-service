@@ -1,4 +1,3 @@
-
 import streamlit as st
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from llama_index.core import StorageContext, load_index_from_storage
@@ -10,7 +9,7 @@ from services.drive_healthnote_api import *
 
 
 
-def symptom_chatbot():
+def symptom_chatbot(name):
     # 히스토리 관리 객체 생성
     history = StreamlitChatMessageHistory()
 
@@ -71,12 +70,15 @@ def symptom_chatbot():
                 # 이름 뽑아오기 성공 -> health_note의 인자로 넘겨야함.
                 names = re.findall(r"\d+\.\s*([^:]+?)\s*:", ko_response, flags=re.DOTALL)
                 health_info['의심 질병'] = ", ".join(names)
-                sheet_write(get_sheet_id(), [health_info])
+                res = sheet_write(get_sheet_id(name), [health_info])
+                if res is not None:
+                    st.success("기입 완료!")
 
             except:
                 health_info = {'날짜': '', '주요 증상': '', '의심 질병': '', '필요한 조치': '', '추가 메모': ''}
-                sheet_write(get_sheet_id(), [health_info])
-        
-        st.success("기입 완료!")
+                res = sheet_write(get_sheet_id(name), [health_info])
+                if res is not None:
+                    st.success("기입 완료!")
+    
 
             

@@ -27,7 +27,7 @@ def get_folder_id():
     folder_name='dog_health_service'
 
     # 이미 존재하는 폴더가 있는지 확인
-    query = f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.spreadsheet' and trashed = false"
+    query = f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false"
     response = service.files().list(q=query, fields="files(id, name)").execute()
     files = response.get('files', [])
 
@@ -37,12 +37,12 @@ def get_folder_id():
         return create_folder()
 
 
-def get_sheet_id():
+def get_sheet_id(name):
     creds = make_creds("drive")
     if not creds:
         st.error("❌ 먼저 로그인하세요")
         return
-    title="건강노트 정보"
+    title=f"{name}의 건강노트 정보"
 
     drive_service = build("drive", "v3", credentials=creds)
 
@@ -55,11 +55,11 @@ def get_sheet_id():
         spreadsheet_id=files[0]['id']
         return spreadsheet_id
     else:
-        return create_sheet()
+        return create_sheet(name)
 
 # 시트 생성하고 시트의 id값 반환
-def create_sheet():
-    title="건강노트 정보"
+def create_sheet(name):
+    title=f"{name}의 건강노트 정보"
     creds = make_creds("drive")
     sheet_service = build("sheets", "v4", credentials=creds)
     drive_service = build("drive", "v3", credentials=creds)
@@ -92,7 +92,7 @@ def create_sheet():
     return spreadsheet_id
 
 # id값으로시트 정보 가져오기
-def sheet_read(spreadsheet_id):
+def sheet_read(spreadsheet_id, name):
     creds = make_creds("drive")
     if not creds:
         st.error("❌ 인증되지 않았습니다. 로그인 후 다시 시도하세요.")
@@ -112,7 +112,7 @@ def sheet_read(spreadsheet_id):
             return []
         
         #테스트
-        st.write("강아지의 건강정보")
+        st.write(f"{name}의 건강정보")
         values=json_key_change(values)  # 키 변경
         st.table(values)    # st표
         return values
@@ -168,6 +168,7 @@ def sheet_write(spreadsheet_id, health_info):
             insertDataOption="INSERT_ROWS",  
             body=body
         ).execute()
+        return response
     except Exception as e:
         st.error(f"오류 : {e}")
 

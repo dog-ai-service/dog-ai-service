@@ -1,7 +1,3 @@
-'''
-    사용자가 자연어로 프롬프트 입력하면 해당 프롬프트를 특정 구조로 만드는 함수
-'''
-
 import os
 from dotenv import load_dotenv
 import openai
@@ -36,7 +32,7 @@ def extract_event_info(user_input: str, date):
         "start": "2025-05-20T15:00:00",
         "end": "2025-05-20T16:00:00"
     },
-    ...]}
+    ]}
 
     주의할점은, 딕셔너리의 key값은 ""로 감싸야해.
     """

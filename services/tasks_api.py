@@ -49,6 +49,7 @@ def tasks_api():
             event_data = {
                 "title": "Task : "+(event['title'] if is_summary else "제목없음"),
                 "start": date[:10],
+                "end"  : date[:10],
                 "resourceId": "a",
                 "allDay" : True,
             }

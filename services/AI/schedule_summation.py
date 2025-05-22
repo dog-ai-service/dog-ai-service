@@ -1,8 +1,3 @@
-'''
-    사용자가 일정 요약 버튼을 눌렀을때, 일정을 요약해줌.
-'''
-
-import openai
 import streamlit as st
 from dotenv import load_dotenv
 import os
