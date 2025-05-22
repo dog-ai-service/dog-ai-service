@@ -76,7 +76,8 @@ for pdf_file in glob.glob("vectordb/guidlines/*.pdf"):
         # Pinecone upsert용 메타
         meta = {
             "source": filename,
-            "chunk_index": i
+            "chunk_index": i, 
+            "chunk_text": chunk
         }
         # 고유 ID
         uid = f"{filename}-{i}-{uuid.uuid4().hex[:8]}"
