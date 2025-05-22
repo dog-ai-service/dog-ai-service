@@ -168,6 +168,7 @@ def sheet_write(spreadsheet_id, health_info):
             insertDataOption="INSERT_ROWS",  
             body=body
         ).execute()
+        return response
     except Exception as e:
         st.error(f"오류 : {e}")
 
