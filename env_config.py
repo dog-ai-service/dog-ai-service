@@ -4,7 +4,7 @@ import os
 
 # 환경변수 불러오기
 load_dotenv()
-이주형 봄슨
+이주형 봄슨씹봄슨임
 # 환경 변수 불러오기
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_API_MODEL = os.getenv("OPENAI_API_MODEL")
