@@ -5,7 +5,7 @@ from langchain.utilities import SerpAPIWrapper
 from langchain_community.tools import DuckDuckGoSearchRun
 from env_config import OPENAI_API_MODEL, OPENAI_API_TEMPERATURE, SERPAPI_API_KEY
 
-def init_dog_agent(memory):
+def init_agent_chain(memory):
     # 1) LLM
     llm = ChatOpenAI(
         model_name=OPENAI_API_MODEL,
