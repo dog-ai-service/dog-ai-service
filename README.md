@@ -237,3 +237,29 @@ dog_ai_service/
 >!manual.txt
 
 ---
+
+## 수정해야 할곳
+```
+login_api.py에서 
+redirect_uri="http://localhost:8080"
+
+
+```
+---
+---
+
+## ppt 자료 출처
+```
+
+2024년 국내 반려동물 양육 비율 약 28.6%…역대 최고
+https://www.dailyvet.co.kr/news/policy/234742
+
+반려동물 보호자 ‘건강’에 가장 관심 많아..신뢰하는 정보 채널은 동물병원
+https://www.dailyvet.co.kr/news/industry/187304
+
+[트렌드] 동물병원 年 100개씩 늘어도 반려동물 의료비 높아지는 까닭은
+https://biz.chosun.com/topics/topics_social/2024/06/09/65V3M3Y6HZD6TFTHX264H5OC34/
+
+```
+
+```
