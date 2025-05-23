@@ -77,10 +77,10 @@ dog_ai_service/
 ├── test.py                       : 테스트용 파일
 ├── .gitignore                    : Git 예외 설정
 │
-├── other_files/                        : 기타 파일 (예: PDF 등)
+├── other_files/                  : 기타 파일 (예: PDF 등)
 │   └── 반려견_AI_비서_기획안_최종.pdf
 |
-├── index_db_backup                     : 증상 데이터를 담은 벡터디비
+├── index_db_backup               : 증상 데이터를 담은 벡터디비
 │
 ├── components/                   : Streamlit UI 컴포넌트
 │   ├── prompt_box.py             : 질문 입력창 컴포넌트 (**삭제 예정**)
@@ -89,6 +89,7 @@ dog_ai_service/
 │   ├── dog_ui.py                 : 강아지 정보 UI
 │   ├── dog_schedule.py           : 강아지 스케줄링 모듈
 │   ├── schedule_to_calendar.py   : 스케줄 데이터 -> 캘린더 푸쉬 / 일정 최신화 업데이트
+│   ├── retrieve_guidelines.py    : 일정생성용 RAG Context 요청
 │   ├── st_calendar.py            : Streamlit용 캘린더 출력 컴포넌트
 |   ├── create_schedulr.py        : 일정 생성 / 일정 요약 출력 컴포넌트트
 |   └── symptom_chatbot.py        : 증상 전문 챗봇 컴포넌트
@@ -98,15 +99,20 @@ dog_ai_service/
 │   ├── chatbot.py                : 챗봇 페이지
 │   └── health_note.py            : 건강 노트 페이지
 │
-└── services/                     : 서비스 API 모듈
-    ├── tasks_api.py              : 구글 Tasks API 처리
-    ├── calendar_api.py           : 캘린더 API 처리
-    ├── login_api.py              : 로그인 처리 API
-    ├── drive_api.py              : 구글 드라이브(시트) API
-    ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈 (필요 없을 지도?)
-    └── AI/                       : AI 관련 기능 모듈
-        ├── extract_event_info.py : 자연어(사용자 프롬프트)를 json으로 변환하는 모듈
-        └── summation.py          : 당일 이벤트를 입력으로 받고, 요약하는 모듈
+├── services/                     : 서비스 API 모듈
+│   ├── tasks_api.py              : 구글 Tasks API 처리
+│   ├── calendar_api.py           : 캘린더 API 처리
+│   ├── login_api.py              : 로그인 처리 API
+│   ├── drive_api.py              : 구글 드라이브(시트) API
+│   ├── get_today_events.py       : 당일 이벤트 리턴해주는 모듈 (필요 없을 지도?)
+│   └── AI/                       : AI 관련 기능 모듈
+│       ├── extract_event_info.py : 자연어(사용자 프롬프트)를 json으로 변환하는 모듈
+│       └── summation.py          : 당일 이벤트를 입력으로 받고, 요약하는 모듈
+│ 
+└── vectordb/                     : Pinecone 벡터 DB 관련
+    ├── ingest_guidelines.py      : 수의학 가이드라인 문서 -> 벡터DB(Pinecone)
+    └── guidlines/*.pdf           : 수의학 가이드라인 문서들 모음
+
 
 
 ```
