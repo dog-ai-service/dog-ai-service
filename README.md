@@ -158,7 +158,7 @@ dog_ai_service/
 >>> 성한빈 개인 테스트 branch
 > ### kyusang
 >> 심규상 개인 branch
-> ### obj
+> ### obj, obj키워드가 들어가는 브랜치
 >> 오병재 개인 branch
 
 
@@ -236,16 +236,6 @@ dog_ai_service/
 >// 7. 4번 특정 '확장자'에서 일부 제외 할 파일  
 >!manual.txt
 
----
-
-## 수정해야 할곳
-```
-login_api.py에서 
-redirect_uri="http://localhost:8080"
-
-
-```
----
 ---
 
 ## ppt 자료 출처
