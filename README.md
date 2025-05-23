@@ -83,7 +83,7 @@ dog_ai_service/
 ├── index_db_backup               : 증상 데이터를 담은 벡터디비
 │
 ├── components/                   : Streamlit UI 컴포넌트
-│   ├── prompt_box.py             : 질문 입력창 컴포넌트 (**삭제 예정**)
+│   ├── prompt_box.py             : 질문 입력창 컴포넌트
 │   ├── sidebar.py                : 사이드바 UI 컴포넌트
 │   ├── dog_data.py               : dog_ui 데이터
 │   ├── dog_ui.py                 : 강아지 정보 UI
@@ -143,12 +143,6 @@ dog_ai_service/
 ## 주의사항
 > .env에는 gpt의 api-key 유출 방지로 Git 예외처리를 하여 수동으로 다운로드해줘야함  
 > 중요 key가 있다면 유출되지 않도록 주의!  
-
----
-
-## 번외(추후 삭제예정)
->윈11 한글 마지막 2번 써지는거 해결법
->>https://m.blog.naver.com/sbs5709/223075779033
 
 ---
 
@@ -250,11 +244,18 @@ dog_ai_service/
 
 ---
 
-## 수정해야 할곳
+## ppt 자료 출처
 ```
-login_api.py에서 
-redirect_uri="http://localhost:8080"
 
+2024년 국내 반려동물 양육 비율 약 28.6%…역대 최고
+https://www.dailyvet.co.kr/news/policy/234742
+
+반려동물 보호자 ‘건강’에 가장 관심 많아..신뢰하는 정보 채널은 동물병원
+https://www.dailyvet.co.kr/news/industry/187304
+
+[트렌드] 동물병원 年 100개씩 늘어도 반려동물 의료비 높아지는 까닭은
+https://biz.chosun.com/topics/topics_social/2024/06/09/65V3M3Y6HZD6TFTHX264H5OC34/
 
 ```
----
+
+```
