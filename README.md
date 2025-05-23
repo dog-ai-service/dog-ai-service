@@ -164,7 +164,7 @@ dog_ai_service/
 >>> 성한빈 개인 테스트 branch
 > ### kyusang
 >> 심규상 개인 branch
-> ### obj
+> ### obj, obj_test 등 obj 키워드 브랜치
 >> 오병재 개인 branch
 
 
