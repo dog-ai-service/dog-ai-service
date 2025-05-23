@@ -140,12 +140,6 @@ dog_ai_service/
 
 ---
 
-## 번외(추후 삭제예정)
->윈11 한글 마지막 2번 써지는거 해결법
->>https://m.blog.naver.com/sbs5709/223075779033
-
----
-
 ## 각 branch 용도
 > ### main(*중요)
 >> 메인 branch  
@@ -242,13 +236,4 @@ dog_ai_service/
 >// 7. 4번 특정 '확장자'에서 일부 제외 할 파일  
 >!manual.txt
 
----
-
-## 수정해야 할곳
-```
-login_api.py에서 
-redirect_uri="http://localhost:8080"
-
-
-```
 ---

@@ -122,9 +122,9 @@ def st_calendar():
                 st.write(st.session_state.box)
             with st.container(border=True):
                 #st.markdown(f"**제목:** {title}")
-                st.markdown(f"**시작일:** {start}")
+                st.markdown(f"**시작일:** {start[:10]+" "+start[11:16] if len(start)>10 else start} ")
                 if end:
-                    st.markdown(f"**종료일:**  {end}")
+                    st.markdown(f"**종료일:**  {end[:10]+" "+end[11:16] if len(end)>10 else end}")
                 st.markdown(f"**종일 여부:**  {'예' if all_day else '아니오'}")
                 st.markdown(f"**설명:**  {description}")
                 #st.markdown(f"**캘린더 아이디:** `{calendar_id_print}`")
