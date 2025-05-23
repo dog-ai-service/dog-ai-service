@@ -48,7 +48,7 @@ def get_calendar_events(calendar_id):
         is_summary = "summary" in event
 
         start = event["start"].get("dateTime", event["start"].get("date"))
-        end = event.get("end", {}).get("dateTime", None)  # end는 없을 수도 있음
+        end = event.get("end", {}).get("dateTime", event.get("end", {}).get("date", None))  # end는 없을 수도 있음
 
         event_data = {
             "title": event['summary'] if is_summary else "제목없음",
@@ -65,6 +65,9 @@ def get_calendar_events(calendar_id):
             event_data["end"] = end[:16] if end else start[:16]
             event_data["allDay"] = False
         else:
+            end_date = datetime.strptime(end, "%Y-%m-%d")  # 문자열 → datetime
+            end_plus_one = end_date + timedelta(days=0)        # 0 더하기
+            event_data["end"] = end_plus_one.strftime("%Y-%m-%d")  # 다시 문자열로 저장
             event_data["allDay"] = True
 
         calendar_events.append(event_data)
@@ -186,16 +189,17 @@ def update_calendar_events(event_id, summary, description, start_time, end_time,
 
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
-
+        #테스트
+        st.info(f"시작 시간 : {start_date.isoformat()}")
         event_body = {
             "summary": summary,
             "description": description,
-            "start": {"date": start_date.isoformat()},
-            "end": {"date": (end_date + timedelta(days=1)).isoformat()}
+            "start":  {"date": start_date.isoformat()}, #{"date": "2025-05-21"},
+            "end": {"date": end_date.isoformat()}, #{"date": "2025-05-21"},
         }
     else:
         # 시간 포함 일정: dateTime 포맷 사용
-        st.info(f"📌 전달받은 시작 시간: {start_time}")
+        #st.info(f"📌 전달받은 시작 시간: {start_time}")
         event_body = {
             "summary": summary,
             "description": description,
@@ -218,7 +222,13 @@ def update_calendar_events(event_id, summary, description, start_time, end_time,
         ).execute()
         st.success(f"✅ 이벤트가 수정되었습니다: {updated_event.get('summary')}")
     except HttpError as error:
-        st.error(f"❌ 이벤트 수정 중 오류 발생: {error}")
+        status = error.resp.status
+        if status == 404:
+            st.error("❌ 이벤트를 찾을 수 없습니다. (404 Not Found)")
+        elif status == 403:
+            st.warning("⚠️ 해당 캘린더에 대한 권한이 없습니다. (403 Forbidden)")
+        else:
+            st.error(f"❌ 알 수 없는 오류가 발생했습니다: 입력값을 확인해주세요.\n{error}")
 
 
 # 세션.selected_calendar에 모든 캘린더 목록의 정보 저장 딕(id, summary) / 실패 시 
@@ -273,4 +283,3 @@ def get_calendar_service():
     except Exception as e:
         st.error(f"캘린더 서비스 생성 오류: {e}")
         return None
-

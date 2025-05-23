@@ -106,101 +106,104 @@ def st_calendar():
             event.get("extendedProps", {}).get("calendar_id", "아이디 없음")
         )
         calendar_summary=(
-            event.get("extendedProps", {}).get("calendar_summary", "캘린더 아이디 오류")
+            event.get("extendedProps", {}).get("calendar_summary", "구글 Tasks(수정불가)")
         )
         calendar_event_id=(
             event.get("extendedProps", {}).get("event_id", "이벤트 아이디 오류")
         )
 
-        st.markdown("### 📌 선택한 이벤트")
-        if "box" in st.session_state:
-            st.write(st.session_state.box)
-        with st.container(border=True):
-            st.markdown(f"**제목:** `{title}`")
-            st.markdown(f"**시작일:** `{start}`")
-            if end:
-                st.markdown(f"**종료일:** `{end}`")
-            st.markdown(f"**종일 여부:** `{'예' if all_day else '아니오'}`")
-            st.markdown(f"**설명:** `{description}`")
-            #st.markdown(f"**캘린더 아이디:** `{calendar_id_print}`")
-            st.markdown(f"**캘린더 제목:** `{calendar_summary}`")
-            #st.markdown(f"**이벤트 아이디:** `{calendar_event_id}`")
+        if all_day and "end" in event: #구글 캘린더와 st캘린더의 출력방식 맞추기(테스크는 end가 없어서 제외)
+            end_date = datetime.strptime(end, "%Y-%m-%d")  # 문자열 → datetime
+            end_plus_one = end_date + timedelta(days=-1)        # -1 더하기
+            end=end_plus_one.strftime("%Y-%m-%d")  # 다시 문자열로 저장
+        
+        with st.expander(f"📌 선택한 이벤트 :  {title}"):
+            if "box" in st.session_state:
+                st.write(st.session_state.box)
+            with st.container(border=True):
+                #st.markdown(f"**제목:** {title}")
+                st.markdown(f"**시작일:** {start[:10]+" "+start[11:16] if len(start)>10 else start} ")
+                if end:
+                    st.markdown(f"**종료일:**  {end[:10]+" "+end[11:16] if len(end)>10 else end}")
+                st.markdown(f"**종일 여부:**  {'예' if all_day else '아니오'}")
+                st.markdown(f"**설명:**  {description}")
+                #st.markdown(f"**캘린더 아이디:** `{calendar_id_print}`")
+                st.markdown(f"**캘린더 위치:**  {calendar_summary}")
+                #st.markdown(f"**이벤트 아이디:** `{calendar_event_id}`")
+        ###
+        # 수정 모드 토글
+        with st.expander("✏️ 이벤트 수정/삭제"):
+            new_title = st.text_input("제목", value=title)
+            new_description = st.text_area("설명", value=description)
+            tz = pytz.timezone("Asia/Seoul")
 
-            st.divider()
-###
-            # 수정 모드 토글
-            with st.expander("✏️ 이벤트 수정"):
-                new_title = st.text_input("제목", value=title)
-                new_description = st.text_area("설명", value=description)
+            new_all_day = st.checkbox("종일 여부", value=all_day)
+
+            if new_all_day:
+                new_start_date = st.date_input("📅 시작 날짜", value=start[:10])
+                new_end_date = st.date_input("📅 종료 날짜", value=end[:10] if end else new_start_date)
+
+                start_obj = {"date": str(new_start_date)}
+                end_obj = {"date": str(new_end_date + timedelta(days=1))}
+
+            else:
+                def parse_dt(dt_str, default_dt):
+                    try:
+                        return datetime.fromisoformat(dt_str)
+                    except:
+                        return default_dt
+            
+                default_start_dt = parse_dt(start, datetime.now().replace(hour=9, minute=0))
+                default_end_dt = parse_dt(end, datetime.now().replace(hour=10, minute=0))
+
+                start_date = st.date_input("📅 시작 날짜", value=default_start_dt.date())
+                end_date = st.date_input("📅 종료 날짜", value=default_end_dt.date())
+
+                st.markdown("⏰ 시작 시간")
+                col1, col2 = st.columns(2)
+                with col1:
+                    start_hour = st.selectbox("시", list(range(0, 24)), index=default_start_dt.hour)
+                with col2:
+                    start_minute = st.selectbox("분", list(range(0, 60)), index=default_start_dt.minute)
+
+                st.markdown("⏰ 종료 시간")
+                col3, col4 = st.columns(2)
+                with col3:
+                    end_hour = st.selectbox("시 ", list(range(0, 24)), index=default_end_dt.hour)
+                with col4:
+                    end_minute = st.selectbox("분 ", list(range(0, 60)), index=default_end_dt.minute)
+
+                start_time_obj = time(start_hour, start_minute)
+                end_time_obj = time(end_hour, end_minute)
+
                 tz = pytz.timezone("Asia/Seoul")
+                start_dt = tz.localize(datetime.combine(start_date, start_time_obj))
+                end_dt = tz.localize(datetime.combine(end_date, end_time_obj))
 
-                new_all_day = st.checkbox("종일 여부", value=all_day)
+                start_obj = {
+                    "dateTime": start_dt.isoformat(),
+                    "timeZone": "Asia/Seoul"
+                }
+                end_obj = {
+                    "dateTime": end_dt.isoformat(),
+                    "timeZone": "Asia/Seoul"
+                }
 
-                if new_all_day:
-                    new_start_date = st.date_input("📅 시작 날짜", value=start[:10])
-                    new_end_date = st.date_input("📅 종료 날짜", value=end[:10] if end else new_start_date)
-
-                    start_obj = {"date": str(new_start_date)}
-                    end_obj = {"date": str(new_end_date + timedelta(days=1))}
-
-                else:
-                    def parse_dt(dt_str, default_dt):
-                        try:
-                            return datetime.fromisoformat(dt_str)
-                        except:
-                            return default_dt
-
-                    default_start_dt = parse_dt(start, datetime.now().replace(hour=9, minute=0))
-                    default_end_dt = parse_dt(end, datetime.now().replace(hour=10, minute=0))
-
-                    start_date = st.date_input("📅 시작 날짜", value=default_start_dt.date())
-                    end_date = st.date_input("📅 종료 날짜", value=default_end_dt.date())
-
-                    st.markdown("### ⏰ 시작 시간")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        start_hour = st.selectbox("시", list(range(0, 24)), index=default_start_dt.hour)
-                    with col2:
-                        start_minute = st.selectbox("분", list(range(0, 60)), index=default_start_dt.minute)
-
-                    st.markdown("### ⏰ 종료 시간")
-                    col3, col4 = st.columns(2)
-                    with col3:
-                        end_hour = st.selectbox("시 ", list(range(0, 24)), index=default_end_dt.hour)
-                    with col4:
-                        end_minute = st.selectbox("분 ", list(range(0, 60)), index=default_end_dt.minute)
-
-                    start_time_obj = time(start_hour, start_minute)
-                    end_time_obj = time(end_hour, end_minute)
-
-                    tz = pytz.timezone("Asia/Seoul")
-                    start_dt = tz.localize(datetime.combine(start_date, start_time_obj))
-                    end_dt = tz.localize(datetime.combine(end_date, end_time_obj))
-
-                    start_obj = {
-                        "dateTime": start_dt.isoformat(),
-                        "timeZone": "Asia/Seoul"
-                    }
-                    end_obj = {
-                        "dateTime": end_dt.isoformat(),
-                        "timeZone": "Asia/Seoul"
-                    }
-
-                if st.button("✅ 수정 저장"):
-                    update_calendar_events(
-                        event_id=calendar_event_id,
-                        summary=new_title,
-                        description=new_description,
-                        start_time=start_obj,
-                        end_time=end_obj,
-                        allDay=new_all_day,
-                        calendar_id=calendar_id_print
-                    )
-                    st.rerun()
+            if st.button("✅ 수정 저장"):
+                update_calendar_events(
+                    event_id=calendar_event_id,
+                    summary=new_title,
+                    description=new_description,
+                    start_time=start_obj,
+                    end_time=end_obj,
+                    allDay=new_all_day,
+                    calendar_id=calendar_id_print
+                )
 
             # 삭제 확인 후 실행
             if st.button("🗑️ 이 이벤트 삭제"):
                 del_calendar_events(calendar_event_id, calendar_id_print)
+            if st.button("화면 갱신"):
                 st.rerun()
 
 

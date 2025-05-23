@@ -22,5 +22,5 @@ else:
     # 강아지 스케쥴링 임시 출력(확인용)
     if len(st.session_state.dogs) >= 1:
         dog_scheduling()
-        print(st.session_state.dogs)
-        print(st.session_state.schedules)
+        # print(st.session_state.dogs)
+        # print(st.session_state.schedules)

@@ -3,8 +3,9 @@ import streamlit as st
 from dateutil import parser
 from datetime import datetime, timedelta
 import re
+import pytz
 
-# --- ISO 8601 기간 문자열 파싱용 정규식 (전체 매칭) ---
+# --- ISO 8601 기간 문자열 파싱용 정규식 ---
 _iso_duration_pattern = re.compile(
     r'^P'
     r'(?:(?P<years>\d+)Y)?'
@@ -18,11 +19,6 @@ _iso_duration_pattern = re.compile(
 )
 
 def parse_iso8601_duration(duration_str: str) -> timedelta:
-    """
-    ISO 8601 기간 문자열 → datetime.timedelta
-    연도는 365일, 월은 30일 기준으로 환산합니다.
-    예: "P1Y2M3DT4H5M6S", "PT20M", "P30D"
-    """
     match = _iso_duration_pattern.fullmatch(duration_str)
     if not match:
         raise ValueError(f"잘못된 ISO 8601 기간 문자열: {duration_str}")
@@ -33,23 +29,16 @@ def parse_iso8601_duration(duration_str: str) -> timedelta:
                      minutes=parts['minutes'],
                      seconds=parts['seconds'])
 
+
 def add_duration_to_iso(start_iso: str, duration_iso: str) -> str:
-    """
-    ISO 8601 시작 시각(start_iso) + ISO 8601 기간(duration_iso)
-    → 새로운 ISO 8601 시각 문자열 반환
-    """
     dt = parser.isoparse(start_iso)
     delta = parse_iso8601_duration(duration_iso)
     return (dt + delta).isoformat()
 
+
 def calculate_end(start_iso: str, duration_iso: str = None) -> str:
-    """
-    schedule 항목의 첫 번째 next 시각과 duration을 이용해 종료 시각 계산.
-    duration이 없으면 기본 30분(PT30M) 적용.
-    """
     dur = duration_iso or "PT30M"
     return add_duration_to_iso(start_iso, dur)
-
 
 # --- 한글 & 이모지 매핑 ---
 TYPE_KOR = {
@@ -62,73 +51,86 @@ TYPE_KOR = {
     "vaccination": "💉 예방접종",
 }
 SUBTYPE_KOR = {
-    "DHPPL":          "종합예방주사",
-    "rabies":         "광견병",
-    "corona":         "코로나장염",
-    "kennel_cough":   "켄넬콕스",
+    "DHPPL":        "종합예방주사",
+    "rabies":       "광견병",
+    "corona":       "코로나장염",
+    "kennel_cough": "켄넬콕스",
 }
 
+# --- 한국시간 전처리 헬퍼 ---
+KST = pytz.timezone('Asia/Seoul')
+
+def normalize_to_kst(iso_str: str) -> str:
+    dt = parser.isoparse(iso_str)
+    dt_naive = dt.replace(tzinfo=None)
+    dt_kst = KST.localize(dt_naive)
+    return dt_kst.isoformat()
+
+# --- 이벤트 summary 생성 ---
 def make_summary(dog_name: str, item: dict) -> str:
-    """
-    Google Calendar 이벤트 summary 생성.
-    vaccination 타입일 땐 subtype 한글명까지 포함.
-    """
     t = item["type"]
     kor = TYPE_KOR.get(t, t)
     if t == "vaccination":
         sub = item.get("subtype", "")
         sub_kor = SUBTYPE_KOR.get(sub, sub.replace("_", " "))
         return f"{dog_name}: {kor}({sub_kor})"
-    else:
-        return f"{dog_name}: {kor}"
+    return f"{dog_name}: {kor}"
 
-
+# --- 캘린더 업데이트 ---
 def update_calendar_from_schedules(schedules: list, service):
-    """
-    1) 지난 일정만 period 만큼 밀어서 item['next'] 갱신
-    2) 갱신된 next 리스트를 기준으로 캘린더에 insert/patch
-    """
-    now = datetime.now()
-
+    now = datetime.now(KST)
+    # 초기화: created_events가 없으면 빈 리스트로
     if "created_events" not in st.session_state:
-        st.session_state.created_events = {}
+        st.session_state.created_events = []
 
     for dog in schedules:
+        # 해당 강아지 entry 찾기 또는 생성
+        entry = next((e for e in st.session_state.created_events if e.get("name") == dog["name"]), None)
+        if entry is None:
+            entry = {"name": dog["name"], "events": []}
+            st.session_state.created_events.append(entry)
+        events_list = entry["events"]  # list of dicts
+
         for item in dog.get("schedule", []):
-            # 1) 지난 일정만 밀어서 next 전체 갱신
-            new_next_list = []
+            # next를 리스트로 통일하고 시간 변환
+            nxts = item.get("next")
+            if isinstance(nxts, str):
+                nxts = [nxts]
+            item["next"] = [normalize_to_kst(x) for x in nxts]
+
+            # 지난 일정 업데이트
+            new_next = []
             for nxt in item["next"]:
                 dt = parser.isoparse(nxt)
-                # 지난 일정이면 period 만큼 반복해서 올린다
                 while dt < now:
                     nxt = add_duration_to_iso(nxt, item["period"])
                     dt = parser.isoparse(nxt)
-                new_next_list.append(nxt)
-            item["next"] = new_next_list
+                new_next.append(nxt)
+            item["next"] = new_next
 
-            # 2) 갱신된 next들을 캘린더에 푸시
-            for nxt in item["next"]:
-                key = f"{dog['name']}:{item['type']}{item.get('subtype','')}:{nxt}"
-                start = nxt
-                end   = calculate_end(start, item.get("duration"))
+            # 이벤트 삽입/수정: index 기반 key 생성
+            for idx, start in enumerate(item["next"]):
+                key = f"{dog['name']}:{item['type']}{item.get('subtype','')}:{idx}"
+                end = calculate_end(start, item.get("duration"))
                 body = {
-                    "summary":     make_summary(dog["name"], item),
+                    "summary": make_summary(dog['name'], item),
                     "description": item.get("detail", ""),
-                    "start":       {"dateTime": start, "timeZone": "Asia/Seoul"},
-                    "end":         {"dateTime": end,   "timeZone": "Asia/Seoul"},
+                    "start": {"dateTime": start, "timeZone": "Asia/Seoul"},
+                    "end": {"dateTime": end, "timeZone": "Asia/Seoul"},
                 }
-
-                if key in st.session_state.created_events:
+                existing = next((ev for ev in events_list if key in ev), None)
+                if existing:
+                    event_id = existing[key]
                     service.events().patch(
                         calendarId="primary",
-                        eventId=st.session_state.created_events[key],
+                        eventId=event_id,
                         body=body
                     ).execute()
                 else:
                     created = service.events().insert(
                         calendarId="primary", body=body
                     ).execute()
-                    st.session_state.created_events[key] = created["id"]
+                    events_list.append({key: created.get("id")})
 
-    # 3) 세션에 최종 반영
+    # schedules 저장
     st.session_state.schedules = schedules

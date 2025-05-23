@@ -29,3 +29,13 @@ deep-translator
 
 # pdf 생성 라이브러리
 aspose-pdf 
+
+# pdf 처리 라이브러리
+pdfplumber
+
+# SerpAPI
+google-search-results
+
+# Vector DB
+pinecone-client
+tiktoken

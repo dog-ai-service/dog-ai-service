@@ -16,10 +16,9 @@
 import streamlit as st
 from components.dog_data import genders, dog_imgs, default_fields
 from datetime import date
+from dateutil import parser
 
 def init_state():
-    if "dogs" not in st.session_state:
-        st.session_state.dogs = []
     if "edit_idx" not in st.session_state:
         st.session_state.edit_idx = None
     if "adding" not in st.session_state:
@@ -27,13 +26,24 @@ def init_state():
     if "add_errors" not in st.session_state:
         st.session_state.add_errors = {}
 
-def compute_age(birth: date) -> int:
+def compute_age(birth):
+    """
+    birth: ISO 8601 문자열 또는 date 객체
+    """
+    # 1) birth가 문자열이면 date로 파싱
+    if isinstance(birth, str):
+        # ex. "2020-05-21" 또는 "2020-05-21T00:00:00"
+        dt = parser.isoparse(birth)
+        birth_date = dt.date()
+    else:
+        birth_date = birth
+
     today = date.today()
-    age = today.year - birth.year
-    # 생일이 아직 안 지난 경우 -1
-    if (today.month, today.day) < (birth.month, birth.day):
-        age -= 1
-    return age
+    # 2) 연도 차이에서 생일 지났는지 보정
+    years = today.year - birth_date.year
+    if (today.month, today.day) < (birth_date.month, birth_date.day):
+        years -= 1
+    return years
 
 def render_dog_card(dog, idx):
     cols = st.columns([1,5,1])
@@ -161,6 +171,7 @@ def render_add_form():
                         "new_gender","new_birth","new_weight","new_note"
                     ]:
                         st.session_state.pop(k, None)
+                    # print("강아지 등록 완료 : ", st.session_state.dogs)
                     st.rerun()
 
             if cancel:
