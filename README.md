@@ -83,7 +83,7 @@ dog_ai_service/
 ├── index_db_backup                     : 증상 데이터를 담은 벡터디비
 │
 ├── components/                   : Streamlit UI 컴포넌트
-│   ├── prompt_box.py             : 질문 입력창 컴포넌트 (**삭제 예정**)
+│   ├── prompt_box.py             : 질문 입력창 컴포넌트
 │   ├── sidebar.py                : 사이드바 UI 컴포넌트
 │   ├── dog_data.py               : dog_ui 데이터
 │   ├── dog_ui.py                 : 강아지 정보 UI
