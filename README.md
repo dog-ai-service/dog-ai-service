@@ -117,6 +117,12 @@ dog_ai_service/
 > streamlit run app.py --server.port 8080  
 > streamlit hello
 
+## 서버 종료
+> Ctrl + C
+### 만약 Ctrl + C로 종료되지 않을때
+> netstat -ano | findstr :8080 -> 8080포트로 돌아가고 있는 프로세스 ID 확인
+> taskkill /PID (실제 PID) /F
+
 ---
 
 ## Git 커밋명 규칙
